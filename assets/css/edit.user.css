@@ -1,0 +1,303 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Noto Sans JP", sans-serif;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #f0f0f0;
+}
+
+/* Header */
+.header {
+  width: 100%;
+  height: 83px;
+  background: #007ec6;
+  display: flex;
+  align-items: center;
+  color: #ffffff;
+}
+
+.sanshin {
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 100%;
+  margin: 0 0 0 42px;
+  color: #ffffff;
+}
+
+.text-header {
+  font-size: 24px;
+  font-weight: 400;
+  margin: 0 0 0 33px;
+}
+
+/* Sidebar */
+.maincontain {
+  display: flex;
+  flex-direction: row;
+  min-height: calc(100vh - 83px);
+}
+
+.sidebar-contain {
+  width: 269px;
+  min-height: 100%;
+  min-width: 112px;
+  max-width: 280px;
+  border-radius: 4px;
+  padding: 8px 0;
+  box-shadow: 0px 2px 6px 2px #00000026, 0px 1px 2px 0px #0000004d;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+.sider {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebarlink {
+  padding: 0 20px;
+}
+
+.sidebar-layer {
+  padding: 8px 12px;
+}
+
+a {
+  text-decoration: none;
+  color: #1d1b20;
+}
+
+.link {
+  display: block;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.sidebarlink.active {
+  background-color: #007ec6;
+}
+
+.sidebarlink.active a {
+  color: #ffffff;
+}
+
+.sidebarlink:not(.active):hover {
+  background-color: #007ec6;
+}
+
+.sidebarlink:not(.active):hover a {
+  color: #ffffff;
+}
+
+.sidebar-placeholder {
+  padding: 8px 20px;
+  font-size: 14px;
+  color: #1d1b20;
+  font-family: "Inter", sans-serif;
+}
+
+/* input */
+.form {
+  display: flex;
+}
+input:disabled,
+select:disabled,
+textarea:disabled {
+  background-color: #cccccc80;
+  color: #1e1e1e;
+  font-weight: 400;
+  cursor: not-allowed;
+  border: 1px solid #cccccc;
+}
+.form label {
+  min-width: 145px;
+  height: 17px;
+}
+
+.form span {
+  color: red;
+}
+
+.form-create {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-left: 120px;
+  margin-top: 51px;
+}
+.form span {
+  color: red;
+  margin-bottom: 40px !important;
+}
+.form input {
+  width: 480px;
+  height: 40px;
+  border-radius: 4px;
+  border: 1px solid #cccccc;
+  background: #ffffff;
+  box-sizing: border-box;
+  padding: 5px 16px;
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: 14px;
+}
+
+.form input::placeholder {
+  padding-left: 5px;
+  color: #999;
+}
+
+select {
+  width: 240px;
+  height: 40px;
+  gap: 8px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  border-width: 1px;
+  border: 1px solid #cccccc;
+  background: #ffffff80;
+}
+
+/* dropdown-list */
+select {
+  width: 240px;
+  height: 40px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: 14px;
+  padding: 0 30px 0 10px;
+  box-sizing: border-box;
+  appearance: none; /* Loại bỏ giao diện mặc định của trình duyệt */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+}
+
+select::-ms-expand {
+  display: none;
+}
+
+select {
+  background: #fff url("../uploads/img/Chevron down.png") no-repeat right 10px
+    center;
+  background-size: 12px 12px;
+}
+
+select option {
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: 14px;
+  padding: 5px 16px;
+}
+
+select:focus {
+  outline: none;
+  border-color: #005bb5;
+  box-shadow: 0 0 5px rgba(0, 126, 198, 0.5);
+}
+
+svg {
+  display: none;
+}
+
+/* datetime */
+#datetimepicker {
+  width: 189px;
+  height: 40px;
+  border-radius: 4px;
+  padding: 5px 16px;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: 14px;
+  box-sizing: border-box;
+  background: #ffffff80;
+  background-image: url("../uploads/img/Vector.png");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 16px 16px;
+  cursor: pointer;
+}
+
+#datetimepicker:focus {
+  outline: none;
+  border-color: #005bb5;
+  box-shadow: 0 0 5px rgba(0, 126, 198, 0.5);
+}
+
+#datetimepicker::-webkit-calendar-picker-indicator {
+  display: none;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+  outline: none;
+  border-color: #005bb5;
+  box-shadow: 0 0 5px rgba(0, 126, 198, 0.5);
+}
+
+/* button-action */
+.button-action {
+  display: flex;
+  gap: 33px;
+  margin-top: 30px;
+}
+.button-action button {
+  width: 220px;
+  height: 50px;
+  border-radius: 4px;
+  border-width: 1px;
+  gap: 4px;
+  padding: 4px 24px 4px 24px;
+  border: 1px solid #cccccc;
+  box-sizing: border-box;
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: 16px;
+  color: #ffffff;
+}
+.button-action button:hover {
+  cursor: pointer;
+}
+
+.error {
+  color: red;
+  font-size: 0.9em;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  display: block;
+}
+
+input:focus,
+select:focus {
+  border: 2px solid #007ec6 !important;
+  outline: none;
+}
+
+.has-error input,
+.has-error select {
+  border: 2px solid #ff0000 !important;
+}
+
+input,
+select {
+  border: 1px solid #ccc !important;
+  transition: border-color 0.3s ease;
+}
+
+input:disabled,
+select:disabled {
+  background-color: #cccccc80;
+  color: #1e1e1e;
+  font-weight: 400;
+  cursor: not-allowed;
+  border: 1px solid #cccccc;
+}

@@ -1,0 +1,91 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Noto Sans JP", sans-serif;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #f0f0f0;
+}
+
+/* Table */
+.body {
+  margin-top: 118px;
+  margin-left: 317px;
+  flex: 1;
+}
+
+table {
+  width: 1077px; /* Total width of the table */
+  border-collapse: collapse;
+  border-radius: 4px;
+  border-style: hidden;
+  box-shadow: 0 0 0 1px #666;
+  table-layout: fixed; /* Ensures column widths are respected */
+}
+
+th,
+td {
+  height: 36px;
+  background: #ffffff;
+  font-family: "Inter", sans-serif;
+  text-align: left;
+  padding-left: 10px;
+  font-size: 12px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  border: 1px solid #b9b9b9;
+}
+
+td {
+  padding: 10px 12px;
+  border-radius: 5px;
+}
+
+th {
+  background: #0000000f;
+}
+
+/* Column widths */
+th:nth-child(1),
+td:nth-child(1) {
+  /* STT */
+  width: 60px;
+  text-align: center;
+}
+
+th:nth-child(2),
+td:nth-child(2) {
+  /* Tiêu đề */
+  width: 150px;
+}
+
+th:nth-child(3),
+td:nth-child(3) {
+  /* Loại đơn */
+  width: 120px;
+}
+
+th:nth-child(4),
+td:nth-child(4) {
+  /* Ngày tạo */
+  width: 100px;
+}
+
+th:nth-child(5),
+td:nth-child(5) {
+  /* Trạng thái */
+  width: 120px;
+  position: relative;
+  padding-left: 28px;
+}
+
+th:nth-child(6),
+td:nth-child(6) {
+  /* Mô tả */
+  width: 527px; /* Adjusted to fit total width of 1077px */
+}

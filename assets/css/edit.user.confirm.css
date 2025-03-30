@@ -1,0 +1,198 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Noto Sans JP", sans-serif;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #f0f0f0;
+}
+
+.maincontain {
+  display: flex;
+  flex-direction: row;
+  min-height: calc(100vh - 83px);
+}
+
+/* Form */
+#container {
+  margin-left: 269px;
+  flex: 1;
+}
+#container p {
+  margin-left: 27px;
+  margin-top: 96px;
+}
+.form-create {
+  display: flex;
+  gap: 22px;
+  margin-left: 120px;
+  margin-top: 51px;
+}
+
+.form {
+  display: flex;
+}
+
+.error {
+  color: red;
+  font-size: 0.9em;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  display: block;
+}
+
+input:focus,
+select:focus {
+  border: 2px solid #007ec6 !important;
+  outline: none;
+}
+
+.has-error input,
+.has-error select {
+  border: 2px solid #ff0000 !important;
+}
+
+input,
+select {
+  border: 1px solid #ccc !important;
+  transition: border-color 0.3s ease;
+}
+input,
+select {
+  border: 1px solid #ccc !important;
+  transition: border-color 0.3s ease;
+}
+
+.form label {
+  min-width: 119px;
+  height: 40px;
+  font-size: 14px;
+  font-weight: 400;
+  margin-top: 10px;
+  margin-bottom: 12px;
+}
+
+.form span {
+  color: red;
+}
+
+.form input {
+  width: 480px;
+  height: 40px;
+  border-radius: 4px;
+  border: 1px solid #cccccc;
+  background: #ffffff;
+  box-sizing: border-box;
+  padding: 5px 16px;
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: 14px;
+}
+
+.form input::placeholder {
+  padding-left: 5px;
+  color: #999;
+}
+
+/* Dropdown-list */
+select {
+  width: 240px;
+  height: 40px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: 14px;
+  padding: 0 30px 0 10px;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+}
+
+select::-ms-expand {
+  display: none;
+}
+
+select {
+  background: #fff url("../uploads/img/Chevron down.png") no-repeat right 10px
+    center;
+  background-size: 12px 12px;
+}
+
+select option {
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: 14px;
+  padding: 5px 16px;
+}
+
+select:focus {
+  outline: none;
+  border-color: #005bb5;
+  box-shadow: 0 0 5px rgba(0, 126, 198, 0.5);
+}
+
+/* Datetime */
+#datetimepicker {
+  width: 189px;
+  height: 40px;
+  border-radius: 4px;
+  padding: 5px 16px;
+  border: 1px solid #cccccc;
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: 14px;
+  box-sizing: border-box;
+  background: #ffffff80;
+  background-image: url("../uploads/img/Vector.png");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 16px 16px;
+  cursor: pointer;
+}
+
+#datetimepicker:focus {
+  outline: none;
+  border-color: #005bb5;
+  box-shadow: 0 0 5px rgba(0, 126, 198, 0.5);
+}
+
+#datetimepicker::-webkit-calendar-picker-indicator {
+  display: none;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+  outline: none;
+  border-color: #005bb5;
+  box-shadow: 0 0 5px rgba(0, 126, 198, 0.5);
+}
+
+/* Button Action */
+.button-action {
+  display: flex;
+  gap: 33px;
+  margin-top: 30px;
+}
+
+.button-action button {
+  width: 220px;
+  height: 50px;
+  border-radius: 4px;
+  border-width: 1px;
+  gap: 4px;
+  padding: 4px 24px 4px 24px;
+  border: 1px solid #cccccc;
+  box-sizing: border-box;
+  font-family: "Noto Sans JP", sans-serif;
+  font-size: 16px;
+  color: #ffffff;
+}
+
+.button-action button:hover {
+  cursor: pointer;
+}
