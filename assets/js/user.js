@@ -38,6 +38,22 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+const requiredStars = document.querySelectorAll(".required-star");
+requiredStars.forEach((star) => {
+  star.style.display = "none";
+});
+const errorMessages = document.querySelectorAll(".error-message");
+errorMessages.forEach((error, index) => {
+  const errorText = error.textContent.trim();
+  const correspondingStar = requiredStars[index];
+
+  if (errorText !== "") {
+    correspondingStar.style.display = "inline";
+  } else {
+    correspondingStar.style.display = "none";
+  }
+});
+
 // Hàm xóa thông báo lỗi của 1 trường
 function clearError(field) {
   const errorSpan = document.querySelector(`.input-form#${field} + .error`);

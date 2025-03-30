@@ -24,10 +24,9 @@ match ($action) {
   'users-multidelete'         => (new UserController)->multidelete(),
 
   'letters-index'   => (new LetterController)->index(),
-  // 'letters-create'  => (new LetterController)->create(),
-  // 'letters-store'   => (new LetterController)->store(),
-  // 'letters-save'    => (new LetterController)->save(),
-
+  'letters-create'  => (new LetterController)->create(),
+  'letters-save'    => (new LetterController)->save(),
+  'letters-approve' => (new LetterController)->approve(),
 
   default         => require_once PATH_VIEW_ADMIN . 'error.php',
 };

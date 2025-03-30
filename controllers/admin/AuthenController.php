@@ -1,5 +1,4 @@
 <?php
-
 require_once PATH_MODEL . 'User.php';
 
 class AuthenController
@@ -14,32 +13,37 @@ class AuthenController
   public function login()
   {
     try {
-      if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-        throw new Exception('※Yêu cầu phương thức phải là POST');
-      }
+      // Lấy dữ liệu từ GET hoặc POST
+      $username = $_REQUEST['username'] ?? null; // Sử dụng $_REQUEST để hỗ trợ cả GET và POST
+      $password = $_REQUEST['password'] ?? null;
 
-      $username = $_POST['username'] ?? null;
-      $password = $_POST['password'] ?? null;
-
+      // Validate dữ liệu ngay lập tức, bất kể GET hay POST
       if (empty($username) || empty($password)) {
         throw new Exception('※Tên đăng nhập hoặc mật khẩu không được để trống!');
       }
 
-      $userModel = new User();
-      $user = $userModel->checkLogin($username, $password);
+      // Chỉ xử lý đăng nhập nếu là POST
+      if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $userModel = new User();
+        $user = $userModel->checkLogin($username, $password);
 
-      if (empty($user)) {
-        throw new Exception('※Thông tin tài khoản không đúng!');
+        if (empty($user)) {
+          throw new Exception('※Thông tin tài khoản không đúng!');
+        }
+
+        $_SESSION['userId'] = $user['userId'];
+        $_SESSION['categoryUser'] = $user['categoryUser'];
+        $_SESSION['username'] = $username;
+        header("Location: " . BASE_URL_ADMIN . "?action=dashboard");
+        exit();
+      } else {
+        // Nếu là GET và dữ liệu hợp lệ, hiển thị form
+        $this->index();
       }
-
-      $_SESSION['username'] = $username;
-      header("Location: " . BASE_URL_ADMIN . "?action=dashboard");
-      exit();
     } catch (Exception $e) {
-      $_SESSION['success'] = false;
-      $_SESSION['msg'] = $e->getMessage();
+      $_SESSION['error'] = $e->getMessage();
       error_log("※Login error: " . $e->getMessage());
-      header('Location: ' . BASE_URL);
+      $this->index();
       exit();
     }
   }

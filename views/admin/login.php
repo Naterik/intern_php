@@ -21,18 +21,15 @@
       <div class="form">
         <p class="sanshin-it">Sanshin IT Solution</p>
         <form action="<?= BASE_URL_ADMIN . '?action=login' ?>" method="post">
+
           <div class="form-input">
             <span class="form-span">Tên đăng nhập<span style="color: red;">*</span></span>
             <input class="input-form" type="text" name="username" placeholder="Tên đăng nhập" value="<?php echo htmlspecialchars($_POST['username'] ?? ''); ?>" />
           </div>
           <div class="form-input">
             <span class="form-span">Mật khẩu<span style="color: red;">*</span></span>
-            <input class="input-form" type="password" name="password" placeholder="Mật khẩu" />
+            <input class="input-form" type="password" name="password" placeholder="Mật khẩu" value="<?php echo htmlspecialchars($_POST['password'] ?? ''); ?>" />
           </div>
-          <?php if (isset($_SESSION['msg'])): ?>
-            <div class="error"><?php echo htmlspecialchars($_SESSION['msg']);
-                                unset($_SESSION['msg']); ?></div>
-          <?php endif; ?>
           <?php if (isset($_SESSION['error'])): ?>
             <div class="error"><?php echo htmlspecialchars($_SESSION['error']);
                                 unset($_SESSION['error']); ?></div>

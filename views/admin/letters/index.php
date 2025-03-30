@@ -16,10 +16,8 @@ $currentPage = 'Quản lý đơn';
 
 <body>
   <?php include PATH_VIEW_ADMIN . 'layout/header.php'; ?>
-
   <div class="wrapper">
     <?php include PATH_VIEW_ADMIN . 'layout/sidebar.php'; ?>
-
     <main class="maincontain">
       <div class="body">
         <div class="action">
@@ -44,7 +42,7 @@ $currentPage = 'Quản lý đơn';
               <th>Loại đơn</th>
               <th>Ngày lập</th>
               <th>Trạng thái</th>
-              <th>Ngày duty</th>
+              <th>Ngày duyệt</th>
               <th>Mô tả</th>
             </tr>
           </thead>
@@ -66,14 +64,18 @@ $currentPage = 'Quản lý đơn';
                   <td><?php echo htmlspecialchars($letter['typesOfApplication'] ?? ''); ?></td>
                   <td><?php echo htmlspecialchars($letter['startDate'] ?? ''); ?></td>
                   <td style="font-weight: 600;"><?php echo $statusText; ?></td>
-                  <td><?php echo htmlspecialchars($letter['endDate'] ?? ''); ?></td>
+                  <td><?php echo htmlspecialchars($letter['approvalDate'] ?? ''); ?></td>
                   <td>
                     <div class="table-td">
                       <span><?php echo htmlspecialchars($letter['content'] ?? ''); ?></span>
                       <?php if ($status == 'đơn mới'): ?>
                         <div class="button-table-action">
-                          <button class="button-table button-approve">Duyệt</button>
-                          <button class="button-table button-cancel">Hủy</button>
+                          <div class="button-table-action">
+                            <a href="<?php echo BASE_URL_ADMIN; ?>?action=letters-approve&letterId=<?php echo $letter['letterId']; ?>">
+                              <button class="button-table button-approve">Duyệt</button>
+                            </a>
+                            <button class="button-table button-cancel" onclick="showCancelDialog(<?php echo $letter['letterId']; ?>)">Hủy</button>
+                          </div>
                         </div>
                       <?php endif; ?>
                     </div>
@@ -112,9 +114,41 @@ $currentPage = 'Quản lý đơn';
             </div>
           </div>
         </footer>
+
+        <!-- Dialog hủy đơn -->
+        <dialog id="cancel-dialog">
+          <div class="dialog-wrapper">
+            <div class="dialog-header">
+              <span>Thông báo</span>
+              <img src="<?php echo BASE_ASSETS_ADMIN; ?>img/material-symbols_close-rounded.png" onclick="showCancelDialog(null)" alt="Close" />
+            </div>
+            <form id="cancel-form" method="POST" action="<?php echo BASE_URL_ADMIN; ?>?action=letters-approve">
+              <input type="hidden" name="letterId" id="cancel-letter-id">
+              <input type="hidden" name="status" value="đã hủy">
+              <label>Lý do hủy đơn <span style="color:red">*</span></label>
+              <input type="text" name="reason" required>
+              <div class="modal-buttons">
+                <button class="modal-buttons-ok" type="submit">OK</button>
+              </div>
+            </form>
+          </div>
+        </dialog>
       </div>
     </main>
   </div>
+
+  <script>
+    function showCancelDialog(letterId) {
+      const dialog = document.getElementById('cancel-dialog');
+      const letterIdInput = document.getElementById('cancel-letter-id');
+      if (letterId) {
+        letterIdInput.value = letterId;
+        dialog.showModal();
+      } else {
+        dialog.close();
+      }
+    }
+  </script>
 </body>
 
 </html>
