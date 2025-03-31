@@ -11,6 +11,7 @@ $currentPage = 'Quản lý đơn';
   <link rel="stylesheet" type="text/css" href="<?php echo BASE_ASSETS_ADMIN; ?>header.css">
   <link rel="stylesheet" type="text/css" href="<?php echo BASE_ASSETS_ADMIN; ?>sidebar.css">
   <link rel="stylesheet" type="text/css" href="<?php echo BASE_ASSETS_ADMIN; ?>letter.css">
+  <link rel="stylesheet" type="text/css" href="<?php echo BASE_ASSETS_ADMIN; ?>popups.css">
   <title>Quản lý đơn</title>
 </head>
 
@@ -120,7 +121,7 @@ $currentPage = 'Quản lý đơn';
           <div class="dialog-wrapper">
             <div class="dialog-header">
               <span>Thông báo</span>
-              <img src="<?php echo BASE_ASSETS_ADMIN; ?>img/material-symbols_close-rounded.png" onclick="showCancelDialog(null)" alt="Close" />
+              <img src="<?php echo BASE_ASSETS_UPLOAD; ?>img/material-symbols_close-rounded.png" onclick="showCancelDialog(null)" alt="Close" />
             </div>
             <form id="cancel-form" method="POST" action="<?php echo BASE_URL_ADMIN; ?>?action=letters-approve">
               <input type="hidden" name="letterId" id="cancel-letter-id">
@@ -148,6 +149,12 @@ $currentPage = 'Quản lý đơn';
         dialog.close();
       }
     }
+
+    // Thêm script để hiển thị alert và redirect nếu có lỗi
+    <?php if (isset($errorToDisplay)): ?>
+      alert('<?php echo addslashes($errorToDisplay); ?>');
+      window.location.href = '<?php echo BASE_URL_ADMIN; ?>?action=letters-index';
+    <?php endif; ?>
   </script>
 </body>
 

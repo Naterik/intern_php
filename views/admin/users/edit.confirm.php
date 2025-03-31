@@ -27,7 +27,6 @@ $currentPage = 'Xác nhận chỉnh sửa người dùng';
         <div class="form-create">
           <form id="user-form" method="POST" action="<?php echo BASE_URL_ADMIN; ?>?action=users-update">
             <input type="hidden" name="confirm" value="true">
-            <!-- Hidden username để gửi lên server -->
             <input type="hidden" name="username" value="<?php echo htmlspecialchars($_SESSION['editUserData']['username'] ?? ''); ?>">
             <div class="form">
               <label>Tên đăng nhập</label>

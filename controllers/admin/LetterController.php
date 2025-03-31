@@ -67,7 +67,7 @@ class LetterController
 
           if (empty($errors)) {
             // Đảm bảo userId được lưu vào session
-            $inputData['userId'] = $_SESSION['userId']; // Gán trực tiếp từ session
+            $inputData['userId'] = $_SESSION['userId'];
             $_SESSION['letterData'] = $inputData;
             require_once PATH_VIEW_ADMIN . 'letters/create.confirm.php';
             exit();
@@ -88,7 +88,7 @@ class LetterController
       if (isset($_SESSION['letterData'])) {
         $letterData = $_SESSION['letterData'];
         $data = [
-          'userId' => $letterData['userId'], // Lấy từ session
+          'userId' => $letterData['userId'],
           'approver' => $letterData['approver'],
           'title' => $letterData['title'],
           'content' => $letterData['content'] ?? '',
@@ -101,7 +101,6 @@ class LetterController
         try {
           $this->letterModel->create($data);
           unset($_SESSION['letterData']);
-          $_SESSION['success'] = "Đơn mới đã được tạo thành công.";
           header("Location: " . BASE_URL_ADMIN . "?action=letters-index");
           exit();
         } catch (Exception $e) {
@@ -121,45 +120,39 @@ class LetterController
   public function approve()
   {
     try {
-      // Kiểm tra quyền
-      if (!isset($_SESSION['userId']) || !isset($_SESSION['categoryUser']) || strtolower($_SESSION['categoryUser']) !== 'admin') {
+
+      $letterId = $_POST['letterId'] ?? $_GET['letterId'] ?? null;
+      if (!$letterId) {
+        throw new Exception("Không tìm thấy ID đơn.");
+      }
+
+      $letter = $this->letterModel->getLetterById($letterId);
+      if (!$letter) {
+        throw new Exception("Không tìm thấy đơn.");
+      }
+
+      if (!isset($_SESSION['userId']) || !isset($_SESSION['categoryUser']) || strtolower(trim($_SESSION['categoryUser'])) !== 'admin') {
         throw new Exception('Chỉ admin mới có quyền duyệt đơn!');
       }
 
-      // Lấy letterId
-      $letterId = $_REQUEST['letterId'] ?? null;
-      if (empty($letterId)) {
-        throw new Exception('Không tìm thấy đơn để duyệt!');
-      }
-
-      // Lấy thông tin đơn
-      $letter = $this->letterModel->getLetterById($letterId);
-      if (!$letter) {
-        throw new Exception('Đơn không tồn tại!');
-      }
-
-      // Xử lý duyệt hoặc hủy (POST)
       if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $newStatus = $_POST['status'] ?? null;
         if (!in_array($newStatus, ['đã duyệt', 'đã hủy'])) {
           throw new Exception('Trạng thái không hợp lệ!');
         }
 
-        // Gọi stored procedure
+        // Cập nhật trạng thái đơn
         $this->letterModel->updateLetterStatus($letterId, $newStatus, $_SESSION['userId']);
-
-        // Thông báo thành công
         $message = "Đơn đã được " . $newStatus . " thành công!";
         if ($newStatus === 'đã hủy' && isset($_POST['reason'])) {
           $message .= " Lý do: " . htmlspecialchars($_POST['reason']);
         }
         $_SESSION['success'] = $message;
-
-        header("Location: " . BASE_URL_ADMIN . "?action=letters-approve&letterId=" . $letterId);
+        header("Location: " . BASE_URL_ADMIN . "?action=letters-index");
         exit();
       }
 
-      // Hiển thị form nếu GET
+
       require_once PATH_VIEW_ADMIN . 'letters/approve.php';
     } catch (Exception $e) {
       $_SESSION['error'] = $e->getMessage();

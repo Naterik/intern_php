@@ -68,22 +68,18 @@ function clearForm() {
   const form = document.getElementById("user-form");
   if (!form) return;
 
-  // Clear các input text/email
   form
     .querySelectorAll("input[type='text'], input[type='email']")
     .forEach((input) => {
-      // Không clear trường readonly (username)
       if (!input.hasAttribute("readonly")) {
         input.value = "";
       }
     });
 
-  // Clear select box
   form.querySelectorAll("select").forEach((select) => {
     select.value = "";
   });
 
-  // Clear datetimepicker
   const datePicker = flatpickr.getInstance(
     document.getElementById("datetimepicker")
   );
@@ -93,12 +89,10 @@ function clearForm() {
     document.getElementById("datetimepicker").value = "";
   }
 
-  // Xóa tất cả thông báo lỗi
   document.querySelectorAll(".error").forEach((error) => error.remove());
   document
     .querySelectorAll(".has-error")
     .forEach((element) => element.classList.remove("has-error"));
 }
 
-// Đưa hàm clearForm ra phạm vi toàn cục
 window.clearForm = clearForm;

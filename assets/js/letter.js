@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const requiredStars = document.querySelectorAll(".required-star");
   requiredStars.forEach((star) => {
-    star.style.display = "none"; // Ẩn sao mặc định
+    star.style.display = "none";
   });
 
   document
@@ -44,7 +44,6 @@ document.addEventListener("DOMContentLoaded", function () {
     fileLabel.style.display = "flex";
   });
 
-  // Sửa từ "error-message" thành "error" để khớp với HTML
   const errors = document.querySelectorAll(".error");
   errors.forEach((error, index) => {
     const errorText = error.textContent.trim();

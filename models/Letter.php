@@ -81,12 +81,15 @@ class Letter extends BaseModel
 
   public function updateLetterStatus($letterId, $newStatus, $currentUserId)
   {
-    // Gọi stored procedure UpdateLetterStatus (giữ nguyên như cũ)
-    $stmt = $this->pdo->prepare("CALL UpdateLetterStatus(:letterId, :newStatus, :currentUserId)");
-    $stmt->execute([
-      'letterId' => $letterId,
-      'newStatus' => $newStatus,
-      'currentUserId' => $currentUserId
-    ]);
+    try {
+      $stmt = $this->pdo->prepare("CALL UpdateLetterStatus(:letterId, :newStatus, :currentUserId)");
+      $stmt->execute([
+        'letterId' => $letterId,
+        'newStatus' => $newStatus,
+        'currentUserId' => $currentUserId
+      ]);
+    } catch (PDOException $e) {
+      throw new Exception("Lỗi khi cập nhật trạng thái: " . $e->getMessage());
+    }
   }
 }

@@ -102,8 +102,6 @@ class UserController
       header("Location: " . BASE_URL_ADMIN . "?action=users-index");
       exit();
     }
-
-    // Lấy thông tin người dùng từ CSDL
     $userData = $this->userModel->getUserById($userId);
     if (!$userData) {
       $_SESSION['error'] = "Không tìm thấy người dùng.";
@@ -114,21 +112,20 @@ class UserController
     // Nếu form được submit
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $inputData = $_POST;
-      // Thực hiện validate dữ liệu (tương tự như hàm validateUserData ở chức năng tạo)
       $errors = $this->validateUserData($inputData, true);
 
       if (!empty($errors)) {
-        // Nếu có lỗi, hiển thị lại form với thông tin đã nhập và lỗi
+
         require_once PATH_VIEW_ADMIN . 'users/edit.php';
       } else {
-        // Nếu dữ liệu hợp lệ, lưu vào session để chuyển sang trang xác nhận
+
         $_SESSION['editUserData'] = $inputData;
         $_SESSION['editUserData']['userId'] = $userId;
         header("Location: " . BASE_URL_ADMIN . "?action=users-update");
         exit();
       }
     } else {
-      // GET: hiển thị form chỉnh sửa với dữ liệu hiện có
+
       require_once PATH_VIEW_ADMIN . 'users/edit.php';
     }
   }
@@ -143,8 +140,6 @@ class UserController
 
         $editData = $_SESSION['editUserData'];
         $userId = (int)$editData['userId'];
-
-        // Validate dữ liệu ở đây nếu cần
         $data = [
           'fullname'      => $editData['name'],
           'email'         => $editData['email'],

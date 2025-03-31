@@ -20,28 +20,30 @@
     <div class="body">
       <div class="form">
         <p class="sanshin-it">Sanshin IT Solution</p>
-        <form action="<?= BASE_URL_ADMIN . '?action=login' ?>" method="post">
-
+        <form action="<?= BASE_URL_ADMIN . '?action=login' ?>" method="post" id="loginForm">
           <div class="form-input">
             <span class="form-span">Tên đăng nhập<span style="color: red;">*</span></span>
-            <input class="input-form" type="text" name="username" placeholder="Tên đăng nhập" value="<?php echo htmlspecialchars($_POST['username'] ?? ''); ?>" />
+            <input class="input-form" type="text" name="username"
+              value="<?php echo htmlspecialchars($_SESSION['username'] ?? $_POST['username'] ?? ''); ?>" />
           </div>
           <div class="form-input">
             <span class="form-span">Mật khẩu<span style="color: red;">*</span></span>
-            <input class="input-form" type="password" name="password" placeholder="Mật khẩu" value="<?php echo htmlspecialchars($_POST['password'] ?? ''); ?>" />
+            <input class="input-form" type="password" name="password"
+              value="<?php echo htmlspecialchars($_SESSION['password'] ?? $_POST['password'] ?? ''); ?>" />
           </div>
           <?php if (isset($_SESSION['error'])): ?>
-            <div class="error"><?php echo htmlspecialchars($_SESSION['error']);
-                                unset($_SESSION['error']); ?></div>
+            <div class="error"><?php echo htmlspecialchars($_SESSION['error']); ?></div>
           <?php endif; ?>
           <div class="button">
             <button class="login-button" type="submit">Login</button>
-            <button class="clear-button" type="reset">Clear</button>
+            <button class="clear-button" type="button" onclick="clearForm()">Clear</button>
           </div>
         </form>
       </div>
     </div>
   </div>
+
+
 </body>
 
 </html>
