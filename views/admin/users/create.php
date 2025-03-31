@@ -10,7 +10,7 @@ $currentPage = 'Quản lý người dùng';
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" type="text/css" href="<?php echo BASE_ASSETS_ADMIN; ?>header.css">
   <link rel="stylesheet" type="text/css" href="<?php echo BASE_ASSETS_ADMIN; ?>sidebar.css">
-  <link rel="stylesheet" type="text/css" href="<?php echo BASE_ASSETS_ADMIN; ?>create.users.css">
+  <link rel="stylesheet" type="text/css" href="<?php echo BASE_ASSETS_ADMIN; ?>create.user.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
@@ -27,7 +27,7 @@ $currentPage = 'Quản lý người dùng';
         <div class="form-create">
           <form id="user-form" method="POST" action="<?= BASE_URL_ADMIN ?>?action=users-store">
             <div class="form">
-              <label>Tên đăng nhập<span style="color: red;">*</span></label>
+              <label>Tên đăng nhập<span class="required-mark">*</span></label>
               <div class="input-form <?php echo isset($errors['username']) ? 'has-error' : ''; ?>">
                 <input type="text" name="username" value="<?php echo htmlspecialchars($inputData['username'] ?? ''); ?>">
                 <?php if (isset($errors['username'])): ?>
@@ -36,7 +36,7 @@ $currentPage = 'Quản lý người dùng';
               </div>
             </div>
             <div class="form">
-              <label>Tên người dùng<span style="color: red;">*</span></label>
+              <label>Tên người dùng<span class="required-mark">*</span></label>
               <div class="input-form <?php echo isset($errors['name']) ? 'has-error' : ''; ?>">
                 <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($inputData['name'] ?? ''); ?>">
                 <?php if (isset($errors['name'])): ?>
@@ -45,7 +45,7 @@ $currentPage = 'Quản lý người dùng';
               </div>
             </div>
             <div class="form">
-              <label>Mật khẩu<span style="color: red;">*</span></label>
+              <label>Mật khẩu<span class="required-mark">*</span></label>
               <div class="input-form <?php echo isset($errors['password']) ? 'has-error' : ''; ?>">
                 <input type="password" id="password" name="password" value="<?php echo htmlspecialchars(isset($inputData['password']) && !empty($errors) ? $_POST['password'] : ''); ?>">
                 <?php if (isset($errors['password'])): ?>
@@ -54,7 +54,7 @@ $currentPage = 'Quản lý người dùng';
               </div>
             </div>
             <div class="form">
-              <label>Email<span style="color: red;">*</span></label>
+              <label>Email<span class="required-mark">*</span></label>
               <div class="input-form <?php echo isset($errors['email']) ? 'has-error' : ''; ?>">
                 <input type="text" id="email" name="email" value="<?php echo htmlspecialchars($inputData['email'] ?? ''); ?>">
                 <?php if (isset($errors['email'])): ?>
@@ -69,7 +69,7 @@ $currentPage = 'Quản lý người dùng';
               </div>
             </div>
             <div class="form">
-              <label for="user_type">Loại người dùng<span style="color: red;">*</span></label>
+              <label for="user_type">Loại người dùng<span class="required-mark">*</span></label>
               <div class="input-form <?php echo isset($errors['user_type']) ? 'has-error' : ''; ?>">
                 <select name="user_type" id="user_type">
                   <option value="" disabled <?php echo empty($inputData['user_type']) ? 'selected' : ''; ?>>Chọn loại</option>
@@ -83,7 +83,7 @@ $currentPage = 'Quản lý người dùng';
               </div>
             </div>
             <div class="form">
-              <label for="department">Phòng ban<span style="color: red;">*</span></label>
+              <label for="department">Phòng ban<span class="required-mark">*</span></label>
               <div class="input-form <?php echo isset($errors['department']) ? 'has-error' : ''; ?>">
                 <select name="department" id="department">
                   <option value="" disabled <?php echo empty($inputData['department']) ? 'selected' : ''; ?>>Chọn phòng ban</option>
@@ -97,7 +97,7 @@ $currentPage = 'Quản lý người dùng';
               </div>
             </div>
             <div class="form">
-              <label for="status">Trạng thái<span style="color: red;">*</span></label>
+              <label for="status">Trạng thái<span class="required-mark">*</span></label>
               <div class="input-form <?php echo isset($errors['status']) ? 'has-error' : ''; ?>">
                 <select name="status" id="status">
                   <option value="" disabled <?php echo empty($inputData['status']) ? 'selected' : ''; ?>>Values</option>

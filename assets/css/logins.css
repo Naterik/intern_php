@@ -93,12 +93,6 @@ body {
   box-sizing: border-box;
   gap: 11px;
 }
-.error {
-  color: red;
-  font-size: 0.9em;
-  margin-top: 5px;
-  display: block;
-}
 
 .button {
   display: flex;
@@ -138,4 +132,9 @@ body {
   width: 494px;
   text-align: right;
   margin-top: 10px;
+}
+
+.required-mark {
+  display: none;
+  color: red;
 }

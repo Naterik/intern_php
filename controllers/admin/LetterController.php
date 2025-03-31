@@ -18,23 +18,24 @@ class LetterController
 
   public function index()
   {
-    // Lấy giá trị tìm kiếm và phân trang từ GET
     $searchTerm = $_GET['search'] ?? '';
     $page = (int)($_GET['page'] ?? 1);
     $limit = 10;
     $offset = ($page - 1) * $limit;
-    $searchResults = $this->letterModel->searchLetters($searchTerm, null);
-    $totalLetters = count($searchResults);
-    $totalPages = ceil($totalLetters / $limit);
-
-    $letters = $this->letterModel->paginate($limit, $offset);
+    $allLetters = $this->letterModel->getAllLetters();
     if ($searchTerm) {
-      $letters = array_filter($letters, function ($letter) use ($searchTerm) {
-        return (stripos($letter['title'], $searchTerm) !== false) ||
-          (stripos($letter['content'], $searchTerm) !== false);
+      $filteredLetters = array_filter($allLetters, function ($letter) use ($searchTerm) {
+        return stripos($letter['userId'], $searchTerm) !== false ||
+          stripos($letter['typesOfApplication'], $searchTerm) !== false ||
+          stripos($letter['content'], $searchTerm) !== false;
       });
-      $letters = array_slice($letters, 0, $limit);
+    } else {
+      $filteredLetters = $allLetters;
     }
+    $totalLetters = count($filteredLetters);
+    $totalPages = ceil($totalLetters / $limit);
+    $data = array_slice($filteredLetters, $offset, $limit);
+    $pagination = ($totalLetters > $limit);
     require_once PATH_VIEW_ADMIN . 'letters/index.php';
   }
 

@@ -12,7 +12,6 @@ $currentPage = 'Quản lý người dùng';
   <link rel="stylesheet" type="text/css" href="<?php echo BASE_ASSETS_ADMIN; ?>header.css">
   <link rel="stylesheet" type="text/css" href="<?php echo BASE_ASSETS_ADMIN; ?>sidebar.css">
   <link rel="stylesheet" type="text/css" href="<?php echo BASE_ASSETS_ADMIN; ?>user.css">
-  <!-- Load Flatpickr CSS (nếu có sử dụng) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 
@@ -39,10 +38,12 @@ $currentPage = 'Quản lý người dùng';
           </div>
         </div>
 
+        <!-- Form chứa danh sách user -->
         <form id="user-form" method="POST" action="">
           <input type="hidden" name="action" id="form-action" value="">
           <input type="hidden" name="confirm" id="confirm" value="true">
-          <input type="hidden" name="userId" id="singleUserId" value="">
+          <!-- Input ẩn chứa toàn bộ userId đã tick trên các trang -->
+          <input type="hidden" name="userIds" id="all-selected-users" value="">
           <table>
             <thead>
               <tr>
@@ -69,7 +70,7 @@ $currentPage = 'Quản lý người dùng';
                   <tr>
                     <td class="checkbox-td">
                       <label class="checkbox-label">
-                        <input class="checkbox user-checkbox" type="checkbox" name="userIds[]" value="<?php echo $user['userId']; ?>">
+                        <input class="checkbox user-checkbox" type="checkbox" name="dummyUserIds[]" value="<?php echo $user['userId']; ?>">
                         <span class="checkmark"></span>
                       </label>
                     </td>
@@ -81,7 +82,6 @@ $currentPage = 'Quản lý người dùng';
                       <a href="<?php echo BASE_URL_ADMIN; ?>?action=users-edit&userId=<?php echo $user['userId']; ?>">
                         <button type="button" class="button-table button-edit">Sửa</button>
                       </a>
-
                       <button type="button" class="button-table button-delete" onclick="confirmDeleteSingle('<?php echo $user['userId']; ?>')">Xóa</button>
                     </td>
                   </tr>
@@ -89,6 +89,7 @@ $currentPage = 'Quản lý người dùng';
               <?php endif; ?>
             </tbody>
           </table>
+          <!-- Phần phân trang -->
           <footer>
             <div class="pagination_section">
               <div class="page-pre">
@@ -124,36 +125,69 @@ $currentPage = 'Quản lý người dùng';
   <?php require_once PATH_VIEW_ADMIN . 'layout/popup.php'; ?>
 
   <script src="<?php echo BASE_ASSETS_JS; ?>popup.js"></script>
-
   <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const checkboxes = document.querySelectorAll(".user-checkbox");
+      const selectAllCheckbox = document.querySelector(".select-all");
+
+      // Lấy danh sách userId đã chọn từ localStorage
+      let selectedUsers = JSON.parse(localStorage.getItem("selectedUsers")) || [];
+
+      // Cập nhật trạng thái checkbox từ localStorage
+      checkboxes.forEach((checkbox) => {
+        if (selectedUsers.includes(checkbox.value)) {
+          checkbox.checked = true;
+        }
+        checkbox.addEventListener("change", function() {
+          if (this.checked) {
+            if (!selectedUsers.includes(this.value)) {
+              selectedUsers.push(this.value);
+            }
+          } else {
+            selectedUsers = selectedUsers.filter((id) => id !== this.value);
+          }
+          localStorage.setItem("selectedUsers", JSON.stringify(selectedUsers));
+        });
+      });
+
+      // Xử lý "Chọn tất cả"
+      if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener("change", function() {
+          checkboxes.forEach((cb) => {
+            cb.checked = this.checked;
+            if (this.checked) {
+              if (!selectedUsers.includes(cb.value)) {
+                selectedUsers.push(cb.value);
+              }
+            } else {
+              // Nếu bỏ chọn tất cả, xóa hết danh sách
+              selectedUsers = [];
+            }
+          });
+          localStorage.setItem("selectedUsers", JSON.stringify(selectedUsers));
+        });
+      }
+    });
+
     function confirmDeleteSingle(userId) {
+      // Xử lý xóa 1 user (giữ nguyên logic hiện tại)
       document.getElementById('user-form').action = '?action=users-delete';
       document.getElementById('form-action').value = 'users-delete';
-      document.getElementById('singleUserId').value = userId;
+      // Bạn có thể đặt 1 input ẩn cho singleUserId nếu cần
       window.showConfirmDialog(true);
     }
 
     function confirmMultiDelete() {
-      const checkboxes = document.querySelectorAll('.user-checkbox:checked');
-      if (checkboxes.length === 0) {
+      const selectedUsers = JSON.parse(localStorage.getItem("selectedUsers")) || [];
+      if (selectedUsers.length === 0) {
         alert('Vui lòng chọn ít nhất một người dùng để xóa.');
         return;
       }
+      // Trước khi submit, gán danh sách đã chọn vào input ẩn
+      document.getElementById('all-selected-users').value = JSON.stringify(selectedUsers);
       document.getElementById('user-form').action = '?action=users-multidelete';
       document.getElementById('form-action').value = 'users-multidelete';
-
       window.showConfirmDialog(true);
-    }
-
-    // Checkbox "Chọn tất cả"
-    const selectAllCheckbox = document.querySelector('.select-all');
-    if (selectAllCheckbox) {
-      selectAllCheckbox.addEventListener('change', function(e) {
-        const userCheckboxes = document.querySelectorAll('.user-checkbox');
-        userCheckboxes.forEach(cb => {
-          cb.checked = e.target.checked;
-        });
-      });
     }
   </script>
 </body>

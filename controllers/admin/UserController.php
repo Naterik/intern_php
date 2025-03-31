@@ -183,7 +183,10 @@ class UserController
   public function multidelete()
   {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-      $userIds = $_POST['userIds'] ?? [];
+      // Nhận danh sách userId đã tick (JSON string)
+      $userIdsJSON = $_POST['userIds'] ?? '[]';
+      $userIds = json_decode($userIdsJSON, true);
+
       if (!empty($userIds)) {
         foreach ($userIds as $userId) {
           $this->userModel->deleteByUserId((int)$userId);

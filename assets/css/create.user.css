@@ -196,3 +196,8 @@ input[type="password"]:focus {
 .button-action button:hover {
   cursor: pointer;
 }
+
+.required-mark {
+  display: none;
+  color: red;
+}

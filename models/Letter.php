@@ -4,17 +4,7 @@ require_once 'BaseModel.php';
 class Letter extends BaseModel
 {
   protected $table = 'letters';
-  public function getAllLetters($limit = 30)
-  {
-    try {
-      $stmt = $this->pdo->prepare("CALL GetAllLetters(:p_limit)");
-      $stmt->bindParam(':p_limit', $limit, PDO::PARAM_INT);
-      $stmt->execute();
-      return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-      throw new Exception("Lỗi khi lấy đơn: " . $e->getMessage());
-    }
-  }
+
   public function searchLetters($searchTerm, $userId = null)
   {
     try {
@@ -25,6 +15,30 @@ class Letter extends BaseModel
       return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
       throw new Exception("Lỗi khi tìm kiếm letters: " . $e->getMessage());
+    }
+  }
+
+  public function countSearchResults($searchTerm, $userId = null)
+  {
+    try {
+      $stmt = $this->pdo->prepare('CALL sp_CountSearchResults(:p_searchText, :p_searchUserId)');
+      $stmt->bindValue(':p_searchText', $searchTerm, PDO::PARAM_STR);
+      $stmt->bindValue(':p_searchUserId', $userId, PDO::PARAM_INT);
+      $stmt->execute();
+      return $stmt->fetchColumn();
+    } catch (PDOException $e) {
+      throw new Exception("Lỗi khi đếm kết quả tìm kiếm: " . $e->getMessage());
+    }
+  }
+  public function getAllLetters($limit = 30)
+  {
+    try {
+      $stmt = $this->pdo->prepare("CALL GetAllLetters(:p_limit)");
+      $stmt->bindParam(':p_limit', $limit, PDO::PARAM_INT);
+      $stmt->execute();
+      return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+      throw new Exception("Lỗi khi lấy đơn: " . $e->getMessage());
     }
   }
   public function create(array $data)

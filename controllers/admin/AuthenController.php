@@ -17,22 +17,15 @@ class AuthenController
       if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $username = $_POST['username'] ?? null;
         $password = $_POST['password'] ?? null;
-        $_SESSION['username'] = $username;
-        $_SESSION['password'] = $password;
-
 
         if (empty($username) || empty($password)) {
           throw new Exception('※Tên đăng nhập hoặc mật khẩu không được để trống!');
         }
-
-        // Xử lý đăng nhập
         $userModel = new User();
         $user = $userModel->checkLogin($username, hashPassword($password));
-
         if (empty($user)) {
           throw new Exception('※Thông tin tài khoản không đúng!');
         }
-
         $_SESSION['userId'] = $user['userId'];
         $_SESSION['categoryUser'] = $user['categoryUser'];
         $_SESSION['email'] = $user['email'];
@@ -41,7 +34,6 @@ class AuthenController
         header("Location: " . BASE_URL_ADMIN . "?action=dashboard");
         exit();
       } else {
-
         $this->index();
       }
     } catch (Exception $e) {

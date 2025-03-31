@@ -48,12 +48,16 @@ $currentPage = 'Quản lý đơn';
             </tr>
           </thead>
           <tbody>
-            <?php if (empty($letters)): ?>
+            <?php if (isset($noResults) && $noResults): ?>
+              <tr>
+                <td colspan="7">Không tìm thấy kết quả nào.</td>
+              </tr>
+            <?php elseif (empty($data)): ?>
               <tr>
                 <td colspan="7">Không có đơn nào.</td>
               </tr>
             <?php else: ?>
-              <?php foreach ($letters as $index => $letter): ?>
+              <?php foreach ($data as $index => $letter): ?>
                 <?php
                 $status = $letter['status'];
                 $statusText = $status == 'đơn mới' ? 'Đơn mới' : ($status == 'đã duyệt' ? 'Đã duyệt' : 'Đã hủy');
@@ -98,12 +102,14 @@ $currentPage = 'Quản lý đơn';
               <?php endif; ?>
             </div>
             <div class="page-number">
-              <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                <a class="page <?php echo $page == $i ? 'active' : ''; ?>"
-                  href="<?php echo BASE_URL_ADMIN; ?>?action=letters-index&page=<?php echo $i; ?><?php echo $searchTerm ? '&search=' . urlencode($searchTerm) : ''; ?>">
-                  <?php echo $i; ?>
-                </a>
-              <?php endfor; ?>
+              <?php if (isset($totalPages)): ?>
+                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                  <a class="page <?php echo $page == $i ? 'active' : ''; ?>"
+                    href="<?php echo BASE_URL_ADMIN; ?>?action=letters-index&page=<?php echo $i; ?><?php echo $searchTerm ? '&search=' . urlencode($searchTerm) : ''; ?>">
+                    <?php echo $i; ?>
+                  </a>
+                <?php endfor; ?>
+              <?php endif; ?>
             </div>
             <div class="page-next">
               <?php if ($page < $totalPages): ?>

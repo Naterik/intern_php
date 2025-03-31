@@ -301,3 +301,8 @@ select:disabled {
   cursor: not-allowed;
   border: 1px solid #cccccc;
 }
+
+.required-mark {
+  display: none;
+  color: red;
+}
