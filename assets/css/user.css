@@ -35,11 +35,11 @@ body {
 
 .maincontain {
   flex: 1;
+  margin-left: 269px;
   padding: 42px 0 0 48px;
 }
 
 .body {
-  margin-left: 317px;
   flex: 1;
 }
 

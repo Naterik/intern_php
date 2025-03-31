@@ -27,7 +27,7 @@ class AuthenController
 
         // Xử lý đăng nhập
         $userModel = new User();
-        $user = $userModel->checkLogin($username, $password);
+        $user = $userModel->checkLogin($username, hashPassword($password));
 
         if (empty($user)) {
           throw new Exception('※Thông tin tài khoản không đúng!');
@@ -37,6 +37,7 @@ class AuthenController
         $_SESSION['categoryUser'] = $user['categoryUser'];
         $_SESSION['email'] = $user['email'];
         $_SESSION['username'] = $username;
+
         header("Location: " . BASE_URL_ADMIN . "?action=dashboard");
         exit();
       } else {

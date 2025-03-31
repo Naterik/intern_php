@@ -11,7 +11,7 @@ $currentPage = 'Quản lý người dùng';
   <link rel="stylesheet" type="text/css" href="<?php echo BASE_ASSETS_ADMIN; ?>popups.css">
   <link rel="stylesheet" type="text/css" href="<?php echo BASE_ASSETS_ADMIN; ?>header.css">
   <link rel="stylesheet" type="text/css" href="<?php echo BASE_ASSETS_ADMIN; ?>sidebar.css">
-  <link rel="stylesheet" type="text/css" href="<?php echo BASE_ASSETS_ADMIN; ?>users.css">
+  <link rel="stylesheet" type="text/css" href="<?php echo BASE_ASSETS_ADMIN; ?>user.css">
   <!-- Load Flatpickr CSS (nếu có sử dụng) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
@@ -22,7 +22,6 @@ $currentPage = 'Quản lý người dùng';
     <?php include PATH_VIEW_ADMIN . 'layout/sidebar.php'; ?>
     <main class="maincontain">
       <div class="body">
-        <!-- Khung tìm kiếm -->
         <div class="action">
           <div class="search">
             <span>Mã/Tên user</span>
@@ -32,32 +31,22 @@ $currentPage = 'Quản lý người dùng';
               <button type="submit" class="action-button-search">Tìm kiếm</button>
             </form>
           </div>
-          <!-- Các nút thao tác -->
           <div class="action-button">
             <a href="<?php echo BASE_URL_ADMIN; ?>?action=users-create">
               <button class="action-button-create" type="button">Thêm mới</button>
             </a>
-            <!-- Nút xóa nhiều -->
             <button class="action-button-delete" type="button" onclick="confirmMultiDelete()">Xóa nhiều</button>
           </div>
         </div>
 
-        <!-- Form chính để submit xóa -->
         <form id="user-form" method="POST" action="">
-          <!-- Input ẩn để xác định hành động xóa (dùng nếu cần) -->
           <input type="hidden" name="action" id="form-action" value="">
-          <!-- Input ẩn để xác định đây là xác nhận xóa -->
           <input type="hidden" name="confirm" id="confirm" value="true">
-          <!-- Dùng cho xóa 1 user (lưu userId khi xóa đơn lẻ) -->
           <input type="hidden" name="userId" id="singleUserId" value="">
-
-          <!-- Bảng danh sách người dùng -->
-
           <table>
             <thead>
               <tr>
                 <th>
-                  <!-- Checkbox chọn tất cả -->
                   <label class="checkbox-label">
                     <input class="checkbox select-all" type="checkbox">
                     <span class="checkmark"></span>
@@ -80,7 +69,6 @@ $currentPage = 'Quản lý người dùng';
                   <tr>
                     <td class="checkbox-td">
                       <label class="checkbox-label">
-                        <!-- Checkbox từng user -->
                         <input class="checkbox user-checkbox" type="checkbox" name="userIds[]" value="<?php echo $user['userId']; ?>">
                         <span class="checkmark"></span>
                       </label>
@@ -93,7 +81,7 @@ $currentPage = 'Quản lý người dùng';
                       <a href="<?php echo BASE_URL_ADMIN; ?>?action=users-edit&userId=<?php echo $user['userId']; ?>">
                         <button type="button" class="button-table button-edit">Sửa</button>
                       </a>
-                      <!-- Nút xóa 1 user -->
+
                       <button type="button" class="button-table button-delete" onclick="confirmDeleteSingle('<?php echo $user['userId']; ?>')">Xóa</button>
                     </td>
                   </tr>
@@ -101,8 +89,6 @@ $currentPage = 'Quản lý người dùng';
               <?php endif; ?>
             </tbody>
           </table>
-
-          <!-- Phân trang -->
           <footer>
             <div class="pagination_section">
               <div class="page-pre">

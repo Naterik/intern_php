@@ -15,7 +15,6 @@ class BaseModel
       die("Kết nối cơ sở dữ liệu thất bại: " . $e->getMessage() . ". Vui lòng thử lại sau.");
     }
   }
-
   public function __destruct()
   {
     $this->pdo = null;
@@ -53,26 +52,22 @@ class BaseModel
     }
   }
 
-
   public function create(array $data)
   {
     try {
-      $this->beginTransaction();
       $columns = implode(', ', array_keys($data));
       $values = implode(', ', array_map(function ($value) {
         return $this->pdo->quote($value);
       }, array_values($data)));
 
-      $stmt = $this->pdo->prepare('CALL GenericInsert(:p_tableName, :p_columns, :p_values)');
+      $stmt = $this->pdo->prepare('CALL GetCreate(:p_tableName, :p_columns, :p_values)');
       $stmt->bindParam(':p_tableName', $this->table, PDO::PARAM_STR);
       $stmt->bindParam(':p_columns', $columns, PDO::PARAM_STR);
       $stmt->bindParam(':p_values', $values, PDO::PARAM_STR);
       $stmt->execute();
 
-      $this->commit();
       return true;
     } catch (PDOException $e) {
-      $this->rollBack();
       throw new Exception("Lỗi khi tạo bản ghi: " . $e->getMessage());
     }
   }
@@ -109,7 +104,6 @@ class BaseModel
       throw new Exception("Update failed: " . $e->getMessage());
     }
   }
-
 
   public function delete($whereClause)
   {

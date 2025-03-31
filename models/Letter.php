@@ -3,11 +3,7 @@ require_once 'BaseModel.php';
 
 class Letter extends BaseModel
 {
-
   protected $table = 'letters';
-
-
-  // Lấy danh sách letter theo giới hạn, sử dụng stored procedure GetAllLetters
   public function getAllLetters($limit = 30)
   {
     try {
@@ -19,8 +15,6 @@ class Letter extends BaseModel
       throw new Exception("Lỗi khi lấy đơn: " . $e->getMessage());
     }
   }
-
-  // Tìm kiếm letters theo từ khóa và userId (nếu có)
   public function searchLetters($searchTerm, $userId = null)
   {
     try {
@@ -56,23 +50,8 @@ class Letter extends BaseModel
       throw new Exception("Lỗi khi tạo đơn mới: " . $e->getMessage());
     }
   }
-
-  /**
-   * Lấy danh sách admin để hiển thị trong dropdown
-   */
-  public function getAdminUsers()
-  {
-    try {
-      $stmt = $this->pdo->prepare('CALL GetAdminUsers()');
-      $stmt->execute();
-      return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-      throw new Exception("Lỗi khi lấy danh sách admin: " . $e->getMessage());
-    }
-  }
   public function getLetterById($letterId)
   {
-    // Gọi stored procedure GetLetterById
     $stmt = $this->pdo->prepare("CALL GetLetterById(:letterId)");
     $stmt->bindParam(':letterId', $letterId, PDO::PARAM_INT);
     $stmt->execute();

@@ -6,7 +6,7 @@ class UserController
 
   public function __construct()
   {
-    $this->userModel = new User(); // Use User class which extends BaseModel
+    $this->userModel = new User();
   }
 
   public function index()
@@ -56,25 +56,23 @@ class UserController
 
   public function save()
   {
-
     if (isset($_POST['confirm']) && $_POST['confirm'] === 'true') {
       if (isset($_SESSION['userData'])) {
         $userData = $_SESSION['userData'];
         $data = [
-          'username' => $userData['username'],
-          'fullname' => $userData['name'],
-          'password' => hashPassword($userData['password']),
-          'email' => $userData['email'],
-          'birthDate' => $userData['birthdate'] ?? null,
+          'username'     => $userData['username'],
+          'fullname'     => $userData['name'],
+          'password'     => hashPassword($userData['password']),
+          'email'        => $userData['email'],
+          'birthDate'    => $userData['birthdate'] ?? null,
           'categoryUser' => $userData['user_type'],
-          'department' => $userData['department'],
-          'status' => $userData['status']
+          'department'   => $userData['department'],
+          'status'       => $userData['status']
         ];
 
         try {
-          error_log(print_r($data, true));
-
           $this->userModel->create($data);
+
           unset($_SESSION['userData']);
           $_SESSION['success'] = "Người dùng đã được tạo thành công.";
           header("Location: " . BASE_URL_ADMIN . "?action=users-index");
@@ -95,7 +93,6 @@ class UserController
 
   public function edit()
   {
-    // Lấy userId từ GET
     $userId = $_GET['userId'] ?? null;
     if (!$userId) {
       $_SESSION['error'] = "Không tìm thấy ID người dùng.";
@@ -108,8 +105,6 @@ class UserController
       header("Location: " . BASE_URL_ADMIN . "?action=users-index");
       exit();
     }
-
-    // Nếu form được submit
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $inputData = $_POST;
       $errors = $this->validateUserData($inputData, true);
@@ -167,7 +162,6 @@ class UserController
     }
   }
 
-
   public function delete()
   {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -186,8 +180,6 @@ class UserController
     }
   }
 
-
-
   public function multidelete()
   {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -204,9 +196,6 @@ class UserController
       exit();
     }
   }
-
-
-
 
   private function validateUserData($data, $isEdit = false)
   {

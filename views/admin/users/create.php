@@ -15,32 +15,6 @@ $currentPage = 'Quản lý người dùng';
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
   <title>Thêm mới người dùng</title>
-  <style>
-    .error {
-      color: red;
-      font-size: 0.9em;
-      margin-top: 10px;
-      margin-bottom: 20px;
-      display: block;
-    }
-
-    input:focus,
-    select:focus {
-      border: 2px solid #007EC6 !important;
-      outline: none;
-    }
-
-    .has-error input,
-    .has-error select {
-      border: 2px solid #FF0000 !important;
-    }
-
-    input,
-    select {
-      border: 1px solid #ccc !important;
-      transition: border-color 0.3s ease;
-    }
-  </style>
 </head>
 
 <body>
@@ -53,7 +27,7 @@ $currentPage = 'Quản lý người dùng';
         <div class="form-create">
           <form id="user-form" method="POST" action="<?= BASE_URL_ADMIN ?>?action=users-store">
             <div class="form">
-              <label>Tên đăng nhập<span>*</span></label>
+              <label>Tên đăng nhập<span style="color: red;">*</span></label>
               <div class="input-form <?php echo isset($errors['username']) ? 'has-error' : ''; ?>">
                 <input type="text" name="username" value="<?php echo htmlspecialchars($inputData['username'] ?? ''); ?>">
                 <?php if (isset($errors['username'])): ?>
@@ -137,7 +111,7 @@ $currentPage = 'Quản lý người dùng';
             </div>
             <div class="button-action">
               <button type="submit" name="next" style="background: #007EC6;">Tiếp theo</button>
-              <button type="button" name="clear" style="background: #E2005C;" onclick="clearForm()">Xóa trống</button>
+              <button type="button" name="clear" style="background: #E2005C;">Xóa trống</button>
             </div>
           </form>
         </div>

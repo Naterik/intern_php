@@ -33,7 +33,28 @@ class User extends BaseModel
       $stmt->execute();
       return true;
     } catch (PDOException $e) {
-      throw new Exception("Lỗi khi xóa nhiều bản ghi: " . $e->getMessage());
+      throw new Exception("Lỗi khi xóa bản ghi: " . $e->getMessage());
+    }
+  }
+  public function getAdminUsers()
+  {
+    try {
+      $stmt = $this->pdo->prepare('CALL GetAdminUsers()');
+      $stmt->execute();
+      return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+      throw new Exception("Lỗi khi lấy danh sách admin: " . $e->getMessage());
+    }
+  }
+  public function getAdminUserById($userId)
+  {
+    try {
+      $stmt = $this->pdo->prepare('CALL GetAdminUserById(:userId)');
+      $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+      $stmt->execute();
+      return $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+      throw new Exception("Lỗi khi lấy thông tin admin: " . $e->getMessage());
     }
   }
 }

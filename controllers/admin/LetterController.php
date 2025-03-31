@@ -1,11 +1,19 @@
 <?php
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require 'vendor/autoload.php';
+
 class LetterController
 {
   private $letterModel;
+  private $userModel;
 
   public function __construct()
   {
     $this->letterModel = new Letter();
+    $this->userModel = new User();
   }
 
   public function index()
@@ -34,8 +42,6 @@ class LetterController
   {
     $inputData = [];
     $errors = [];
-
-    // Kiểm tra đăng nhập trước khi hiển thị form
     if (!isset($_SESSION['userId']) || empty($_SESSION['userId'])) {
       $_SESSION['error'] = "Vui lòng đăng nhập để tạo đơn.";
       header("Location: " . BASE_URL_ADMIN . "?action=login");
@@ -48,7 +54,6 @@ class LetterController
         $errors = $this->validateLetterData($inputData);
 
         if (empty($errors)) {
-          // Xử lý file upload
           if (isset($_FILES['attach']) && $_FILES['attach']['error'] === UPLOAD_ERR_OK) {
             $uploadDir = 'uploads/';
             if (!file_exists($uploadDir)) {
@@ -66,7 +71,6 @@ class LetterController
           }
 
           if (empty($errors)) {
-            // Đảm bảo userId được lưu vào session
             $inputData['userId'] = $_SESSION['userId'];
             $_SESSION['letterData'] = $inputData;
             require_once PATH_VIEW_ADMIN . 'letters/create.confirm.php';
@@ -120,7 +124,6 @@ class LetterController
   public function approve()
   {
     try {
-
       $letterId = $_POST['letterId'] ?? $_GET['letterId'] ?? null;
       if (!$letterId) {
         throw new Exception("Không tìm thấy ID đơn.");
@@ -144,20 +147,76 @@ class LetterController
         // Cập nhật trạng thái đơn
         $this->letterModel->updateLetterStatus($letterId, $newStatus, $_SESSION['userId']);
         $message = "Đơn đã được " . $newStatus . " thành công!";
+        $reason = null;
         if ($newStatus === 'đã hủy' && isset($_POST['reason'])) {
-          $message .= " Lý do: " . htmlspecialchars($_POST['reason']);
+          $reason = htmlspecialchars($_POST['reason']);
+          $message .= " Lý do: " . $reason;
         }
+
+        // Lấy email của người dùng (người tạo đơn)
+        $userEmail = $_SESSION['email'];
+        if (empty($userEmail)) {
+          throw new Exception('Không tìm thấy email của người dùng!');
+        }
+
+        // Lấy thông tin người duyệt (approver) bằng userId
+        $approver = $this->userModel->getAdminUserById($letter['approver']);
+        if (!$approver) {
+          throw new Exception('Không tìm thấy thông tin người duyệt!');
+        }
+
+        // Gửi email đến người dùng
+        $this->sendApprovalEmail($userEmail, $letter, $newStatus, $approver, $reason);
+
         $_SESSION['success'] = $message;
         header("Location: " . BASE_URL_ADMIN . "?action=letters-index");
         exit();
       }
 
-
+      // Hiển thị form approve.php
       require_once PATH_VIEW_ADMIN . 'letters/approve.php';
     } catch (Exception $e) {
       $_SESSION['error'] = $e->getMessage();
       header("Location: " . BASE_URL_ADMIN . "?action=letters-index");
       exit();
+    }
+  }
+
+  private function sendApprovalEmail($to, $letter, $status, $approver, $reason = null)
+  {
+    $mail = new PHPMailer(true);
+    try {
+      // Cấu hình SMTP
+      $mail->isSMTP();
+      $mail->Host = 'smtp.gmail.com';
+      $mail->SMTPAuth = true;
+      $mail->Username = 'khuonglol12@gmail.com';
+      $mail->Password = 'stfl bwqx fajo dcxm';
+      $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+      $mail->Port = 587;
+
+      // Cấu hình email
+      $mail->setFrom('khuonglol12@gmail.com', 'Admin');
+      $mail->addAddress($to);
+      $mail->Subject = "Thông báo về đơn của bạn";
+      $mail->isHTML(true);
+
+      // Tạo nội dung email
+      $body = "<p>Đơn của bạn với tiêu đề: <strong>" . htmlspecialchars($letter['title']) . "</strong> " . htmlspecialchars($status) . ".</p>"
+        . "<p>Người duyệt: <strong>" . htmlspecialchars($approver['fullname']) . "</strong> (" . htmlspecialchars($approver['email']) . ")</p>"
+        . "<p>Loại đơn: <strong>" . htmlspecialchars($letter['typesOfApplication']) . "</strong></p>"
+        . "<p>Mô tả: " . htmlspecialchars($letter['content']) . "</p>";
+
+      if ($status === 'đã hủy' && $reason) {
+        $body .= "<p>Lý do hủy: " . htmlspecialchars($reason) . "</p>";
+      }
+
+      $mail->Body = $body;
+
+      // Gửi email
+      $mail->send();
+    } catch (Exception $e) {
+      error_log("Lỗi gửi email: " . $mail->ErrorInfo);
     }
   }
 

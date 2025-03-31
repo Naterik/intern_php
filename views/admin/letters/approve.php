@@ -175,7 +175,7 @@ if (!isset($letter)) {
       form.submit();
     }
 
-    // Thêm script để hiển thị alert nếu có lỗi
+
     <?php if (isset($errorToDisplay)): ?>
       alert('<?php echo addslashes($errorToDisplay); ?>');
       window.location.href = '<?php echo BASE_URL_ADMIN; ?>?action=letters-index';

@@ -12,6 +12,7 @@ match ($action) {
   '/'       => (new AuthenController)->index(),
   'login'                 => (new AuthenController)->login(),
   'logout'                => (new AuthenController)->logout(),
+  'clearError' => (new AuthenController)->logout(),
 
   'dashboard'     => (new DashboardController)->index(),
   'users-index'   => (new UserController)->index(),

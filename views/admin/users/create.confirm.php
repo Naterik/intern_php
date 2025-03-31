@@ -10,8 +10,8 @@ $currentPage = 'Quản lý người dùng';
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" type="text/css" href="<?php echo BASE_ASSETS_ADMIN; ?>header.css">
   <link rel="stylesheet" type="text/css" href="<?php echo BASE_ASSETS_ADMIN; ?>sidebar.css">
-  <link rel="stylesheet" type="text/css" href="<?php echo BASE_ASSETS_ADMIN; ?>create.user.confirm.css">
-  <link rel="stylesheet" type="text/css" href="<?php echo BASE_ASSETS_ADMIN; ?>popup.css">
+  <link rel="stylesheet" type="text/css" href="<?php echo BASE_ASSETS_ADMIN; ?>create.user.confirms.css">
+  <link rel="stylesheet" type="text/css" href="<?php echo BASE_ASSETS_ADMIN; ?>popups.css">
   <title>Xác nhận thêm mới người dùng</title>
 </head>
 
@@ -74,7 +74,7 @@ $currentPage = 'Quản lý người dùng';
   <script src="<?php echo BASE_ASSETS_JS; ?>popup.js"></script>
   <script>
     function goBack() {
-      window.location.href = '<?php echo BASE_URL_ADMIN; ?>?action=users&subAction=create';
+      window.location.href = '<?php echo BASE_URL_ADMIN; ?>?action=users-create';
     }
   </script>
 </body>

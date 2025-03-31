@@ -43,7 +43,16 @@
     </div>
   </div>
 
-
+  <script>
+    function clearForm() {
+      document.getElementById("loginForm").reset();
+      const errorElement = document.querySelector(".error");
+      if (errorElement) {
+        errorElement.remove();
+      }
+      window.location.href = "<?= BASE_URL_ADMIN . '?action=clearError' ?>";
+    }
+  </script>
 </body>
 
 </html>
