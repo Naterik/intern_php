@@ -75,14 +75,31 @@ class Letter extends BaseModel
   public function updateLetterStatus($letterId, $newStatus, $currentUserId)
   {
     try {
+      // Lấy thông tin đơn để kiểm tra quyền trước
+      $stmt = $this->pdo->prepare("SELECT approver FROM letters WHERE letterId = :letterId");
+      $stmt->execute(['letterId' => $letterId]);
+      $letter = $stmt->fetch(PDO::FETCH_ASSOC);
+
+      if (!$letter) {
+        return ['success' => false, 'message' => "Không tìm thấy đơn với ID: $letterId"];
+      }
+
+      // Kiểm tra quyền người duyệt
+      if ($letter['approver'] != $currentUserId) {
+        return ['success' => false, 'message' => "Bạn không có quyền cập nhật đơn này!"];
+      }
+
+      // Nếu có quyền, gọi stored procedure để cập nhật trạng thái
       $stmt = $this->pdo->prepare("CALL UpdateLetterStatus(:letterId, :newStatus, :currentUserId)");
       $stmt->execute([
         'letterId' => $letterId,
         'newStatus' => $newStatus,
         'currentUserId' => $currentUserId
       ]);
+
+      return ['success' => true, 'message' => "Cập nhật trạng thái thành công!"];
     } catch (PDOException $e) {
-      throw new Exception("Lỗi khi cập nhật trạng thái: " . $e->getMessage());
+      return ['success' => false, 'message' => "Lỗi khi cập nhật trạng thái: " . $e->getMessage()];
     }
   }
 }

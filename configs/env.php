@@ -1,6 +1,6 @@
 <?php
 // configs/env.php
-define('BASE_URL', 'http://localhost/figma/');
+define('BASE_URL', '/figma/');
 define('BASE_URL_ADMIN', BASE_URL . 'admin/');
 define('PATH_ROOT', __DIR__ . '/../');
 define('PATH_VIEW_ADMIN', PATH_ROOT . 'views/admin/');

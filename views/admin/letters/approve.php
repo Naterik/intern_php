@@ -165,7 +165,6 @@ if (!isset($letter)) {
         if (!reason.trim()) {
           alert('Lý do hủy đơn không được để trống!');
           return;
-          Q
         }
         reasonInput.value = reason;
         showCancelDialog(false);
@@ -175,9 +174,9 @@ if (!isset($letter)) {
       form.submit();
     }
 
-
-    <?php if (isset($errorToDisplay)): ?>
-      alert('<?php echo addslashes($errorToDisplay); ?>');
+    // Hiển thị alert nếu có errorMessage từ controller
+    <?php if (isset($errorMessage)): ?>
+      alert('<?php echo addslashes($errorMessage); ?>');
       window.location.href = '<?php echo BASE_URL_ADMIN; ?>?action=letters-index';
     <?php endif; ?>
   </script>

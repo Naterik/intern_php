@@ -124,29 +124,38 @@ class LetterController
 
   public function approve()
   {
-    try {
-      $letterId = $_POST['letterId'] ?? $_GET['letterId'] ?? null;
-      if (!$letterId) {
-        throw new Exception("Không tìm thấy ID đơn.");
+    $letterId = $_POST['letterId'] ?? $_GET['letterId'] ?? null;
+    if (!$letterId) {
+      $errorMessage = "Không tìm thấy ID đơn.";
+      require_once PATH_VIEW_ADMIN . 'letters/approve.php';
+      return;
+    }
+
+    $letter = $this->letterModel->getLetterById($letterId);
+    if (!$letter) {
+      $errorMessage = "Không tìm thấy đơn.";
+      require_once PATH_VIEW_ADMIN . 'letters/approve.php';
+      return;
+    }
+
+    if (!isset($_SESSION['userId']) || !isset($_SESSION['categoryUser']) || strtolower(trim($_SESSION['categoryUser'])) !== 'admin') {
+      $errorMessage = "Chỉ admin mới có quyền duyệt đơn!";
+      require_once PATH_VIEW_ADMIN . 'letters/approve.php';
+      return;
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      $newStatus = $_POST['status'] ?? null;
+      if (!in_array($newStatus, ['đã duyệt', 'đã hủy'])) {
+        $errorMessage = "Trạng thái không hợp lệ!";
+        require_once PATH_VIEW_ADMIN . 'letters/approve.php';
+        return;
       }
 
-      $letter = $this->letterModel->getLetterById($letterId);
-      if (!$letter) {
-        throw new Exception("Không tìm thấy đơn.");
-      }
+      // Cập nhật trạng thái đơn và lấy kết quả
+      $result = $this->letterModel->updateLetterStatus($letterId, $newStatus, $_SESSION['userId']);
 
-      if (!isset($_SESSION['userId']) || !isset($_SESSION['categoryUser']) || strtolower(trim($_SESSION['categoryUser'])) !== 'admin') {
-        throw new Exception('Chỉ admin mới có quyền duyệt đơn!');
-      }
-
-      if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $newStatus = $_POST['status'] ?? null;
-        if (!in_array($newStatus, ['đã duyệt', 'đã hủy'])) {
-          throw new Exception('Trạng thái không hợp lệ!');
-        }
-
-        // Cập nhật trạng thái đơn
-        $this->letterModel->updateLetterStatus($letterId, $newStatus, $_SESSION['userId']);
+      if ($result['success']) {
         $message = "Đơn đã được " . $newStatus . " thành công!";
         $reason = null;
         if ($newStatus === 'đã hủy' && isset($_POST['reason'])) {
@@ -157,30 +166,33 @@ class LetterController
         // Lấy email của người dùng (người tạo đơn)
         $userEmail = $_SESSION['email'];
         if (empty($userEmail)) {
-          throw new Exception('Không tìm thấy email của người dùng!');
+          $errorMessage = "Không tìm thấy email của người dùng!";
+          require_once PATH_VIEW_ADMIN . 'letters/approve.php';
+          return;
         }
 
-        // Lấy thông tin người duyệt (approver) bằng userId
+        // Lấy thông tin người duyệt (approver)
         $approver = $this->userModel->getAdminUserById($letter['approver']);
         if (!$approver) {
-          throw new Exception('Không tìm thấy thông tin người duyệt!');
+          $errorMessage = "Không tìm thấy thông tin người duyệt!";
+          require_once PATH_VIEW_ADMIN . 'letters/approve.php';
+          return;
         }
 
-        // Gửi email đến người dùng
+        // Gửi email thông báo
         $this->sendApprovalEmail($userEmail, $letter, $newStatus, $approver, $reason);
 
         $_SESSION['success'] = $message;
         header("Location: " . BASE_URL_ADMIN . "?action=letters-index");
         exit();
+      } else {
+        // Nếu cập nhật thất bại (ví dụ: không có quyền), truyền thông báo lỗi vào view
+        $errorMessage = $result['message'];
       }
-
-      // Hiển thị form approve.php
-      require_once PATH_VIEW_ADMIN . 'letters/approve.php';
-    } catch (Exception $e) {
-      $_SESSION['error'] = $e->getMessage();
-      header("Location: " . BASE_URL_ADMIN . "?action=letters-index");
-      exit();
     }
+
+    // Hiển thị form approve.php với thông báo lỗi nếu có
+    require_once PATH_VIEW_ADMIN . 'letters/approve.php';
   }
 
   private function sendApprovalEmail($to, $letter, $status, $approver, $reason = null)
