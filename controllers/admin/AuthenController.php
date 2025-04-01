@@ -24,13 +24,17 @@ class AuthenController
         $userModel = new User();
         $user = $userModel->checkLogin($username, hashPassword($password));
         if (empty($user)) {
-          throw new Exception('※Thông tin tài khoản không đúng!');
+          throw new Exception('※Thông tin tài khoản hoặc mật khẩu không đúng!');
         }
-        $_SESSION['currentUser'] = $user;
+        $_SESSION['userId'] = $user['userId'];
+        $_SESSION['categoryUser'] = $user['categoryUser'];
+        $_SESSION['email'] = $user['email'];
+        $_SESSION['username'] = $username;
 
         header("Location: " . BASE_URL_ADMIN . "?action=dashboard");
         exit();
       } else {
+        echo
         $this->index();
       }
     } catch (Exception $e) {

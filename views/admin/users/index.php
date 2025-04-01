@@ -1,5 +1,6 @@
 <?php
-session_start(); // Đảm bảo session được khởi động
+
+echo
 $currentPage = 'Quản lý người dùng';
 ?>
 <!DOCTYPE html>
