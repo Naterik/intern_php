@@ -199,7 +199,7 @@ class LetterController
       // Cấu hình email
       $mail->setFrom('khuonglol12@gmail.com', 'Admin');
       $mail->addAddress($to);
-      $mail->Subject = "Thông báo về đơn của bạn";
+      $mail->Subject = "About your letter";
       $mail->isHTML(true);
 
       // Tạo nội dung email

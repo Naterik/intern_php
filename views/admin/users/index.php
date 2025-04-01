@@ -1,4 +1,5 @@
 <?php
+session_start(); // Đảm bảo session được khởi động
 $currentPage = 'Quản lý người dùng';
 ?>
 <!DOCTYPE html>
@@ -34,15 +35,15 @@ $currentPage = 'Quản lý người dùng';
             <a href="<?php echo BASE_URL_ADMIN; ?>?action=users-create">
               <button class="action-button-create" type="button">Thêm mới</button>
             </a>
-            <button class="action-button-delete" type="button" onclick="confirmMultiDelete()">Xóa nhiều</button>
+            <?php if (isset($_SESSION['categoryUser']) && strcasecmp($_SESSION['categoryUser'], 'admin') === 0): ?>
+              <button class="action-button-delete" type="button" onclick="confirmMultiDelete()">Xóa nhiều</button>
+            <?php endif; ?>
           </div>
         </div>
 
-        <!-- Form chứa danh sách user -->
         <form id="user-form" method="POST" action="">
           <input type="hidden" name="action" id="form-action" value="">
           <input type="hidden" name="confirm" id="confirm" value="true">
-          <!-- Input ẩn chứa toàn bộ userId đã tick trên các trang -->
           <input type="hidden" name="userIds" id="all-selected-users" value="">
           <table>
             <thead>
@@ -82,14 +83,16 @@ $currentPage = 'Quản lý người dùng';
                       <a href="<?php echo BASE_URL_ADMIN; ?>?action=users-edit&userId=<?php echo $user['userId']; ?>">
                         <button type="button" class="button-table button-edit">Sửa</button>
                       </a>
-                      <button type="button" class="button-table button-delete" onclick="confirmDeleteSingle('<?php echo $user['userId']; ?>')">Xóa</button>
+                      <?php if (isset($_SESSION['categoryUser']) && strcasecmp($_SESSION['categoryUser'], 'admin') === 0): ?>
+                        <button type="button" class="button-table button-delete" onclick="confirmDeleteSingle('<?php echo $user['userId']; ?>')">Xóa</button>
+                      <?php endif; ?>
                     </td>
                   </tr>
                 <?php endforeach; ?>
               <?php endif; ?>
             </tbody>
           </table>
-          <!-- Phần phân trang -->
+          <!-- Phần phân trang giữ nguyên -->
           <footer>
             <div class="pagination_section">
               <div class="page-pre">
@@ -126,14 +129,12 @@ $currentPage = 'Quản lý người dùng';
 
   <script src="<?php echo BASE_ASSETS_JS; ?>popup.js"></script>
   <script>
+    // Giữ nguyên JavaScript
     document.addEventListener("DOMContentLoaded", function() {
       const checkboxes = document.querySelectorAll(".user-checkbox");
       const selectAllCheckbox = document.querySelector(".select-all");
 
-      // Lấy danh sách userId đã chọn từ localStorage
       let selectedUsers = JSON.parse(localStorage.getItem("selectedUsers")) || [];
-
-      // Cập nhật trạng thái checkbox từ localStorage
       checkboxes.forEach((checkbox) => {
         if (selectedUsers.includes(checkbox.value)) {
           checkbox.checked = true;
@@ -150,7 +151,6 @@ $currentPage = 'Quản lý người dùng';
         });
       });
 
-      // Xử lý "Chọn tất cả"
       if (selectAllCheckbox) {
         selectAllCheckbox.addEventListener("change", function() {
           checkboxes.forEach((cb) => {
@@ -160,7 +160,6 @@ $currentPage = 'Quản lý người dùng';
                 selectedUsers.push(cb.value);
               }
             } else {
-              // Nếu bỏ chọn tất cả, xóa hết danh sách
               selectedUsers = [];
             }
           });
@@ -170,10 +169,8 @@ $currentPage = 'Quản lý người dùng';
     });
 
     function confirmDeleteSingle(userId) {
-      // Xử lý xóa 1 user (giữ nguyên logic hiện tại)
       document.getElementById('user-form').action = '?action=users-delete';
       document.getElementById('form-action').value = 'users-delete';
-      // Bạn có thể đặt 1 input ẩn cho singleUserId nếu cần
       window.showConfirmDialog(true);
     }
 
@@ -183,7 +180,6 @@ $currentPage = 'Quản lý người dùng';
         alert('Vui lòng chọn ít nhất một người dùng để xóa.');
         return;
       }
-      // Trước khi submit, gán danh sách đã chọn vào input ẩn
       document.getElementById('all-selected-users').value = JSON.stringify(selectedUsers);
       document.getElementById('user-form').action = '?action=users-multidelete';
       document.getElementById('form-action').value = 'users-multidelete';

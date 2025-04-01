@@ -26,10 +26,7 @@ class AuthenController
         if (empty($user)) {
           throw new Exception('※Thông tin tài khoản không đúng!');
         }
-        $_SESSION['userId'] = $user['userId'];
-        $_SESSION['categoryUser'] = $user['categoryUser'];
-        $_SESSION['email'] = $user['email'];
-        $_SESSION['username'] = $username;
+        $_SESSION['currentUser'] = $user;
 
         header("Location: " . BASE_URL_ADMIN . "?action=dashboard");
         exit();
@@ -42,7 +39,6 @@ class AuthenController
       exit();
     }
   }
-
   public function logout()
   {
     session_destroy();
