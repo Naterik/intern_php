@@ -47,7 +47,7 @@ $currentPage = 'Quản lý người dùng';
             <div class="form">
               <label>Mật khẩu<span class="required-mark">*</span></label>
               <div class="input-form <?php echo isset($errors['password']) ? 'has-error' : ''; ?>">
-                <input type="password" id="password" name="password" value="<?php echo htmlspecialchars(isset($inputData['password']) && !empty($errors) ? $_POST['password'] : ''); ?>">
+                <input type="password" id="password" name="password" value="<?php echo htmlspecialchars($inputData['password'] ?? ''); ?>" autocomplete="new-password">
                 <?php if (isset($errors['password'])): ?>
                   <span class="error" data-field="password"><?php echo $errors['password']; ?></span>
                 <?php endif; ?>
@@ -73,9 +73,9 @@ $currentPage = 'Quản lý người dùng';
               <div class="input-form <?php echo isset($errors['user_type']) ? 'has-error' : ''; ?>">
                 <select name="user_type" id="user_type">
                   <option value="" disabled <?php echo empty($inputData['user_type']) ? 'selected' : ''; ?>>Chọn loại</option>
-                  <option value="Admin" <?php echo ($inputData['user_type'] ?? '') === 'Admin' ? 'selected' : ''; ?>>Admin</option>
-                  <option value="User" <?php echo ($inputData['user_type'] ?? '') === 'User' ? 'selected' : ''; ?>>User</option>
-                  <option value="Guest" <?php echo ($inputData['user_type'] ?? '') === 'Guest' ? 'selected' : ''; ?>>Guest</option>
+                  <option value="admin" <?php echo ($inputData['user_type'] ?? '') === 'admin' ? 'selected' : ''; ?>>Admin</option>
+                  <option value="user" <?php echo ($inputData['user_type'] ?? '') === 'user' ? 'selected' : ''; ?>>User</option>
+                  <option value="manager" <?php echo ($inputData['user_type'] ?? '') === 'manager' ? 'selected' : ''; ?>>Manager</option>
                 </select>
                 <?php if (isset($errors['user_type'])): ?>
                   <span class="error" data-field="user_type"><?php echo $errors['user_type']; ?></span>

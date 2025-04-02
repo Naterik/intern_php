@@ -15,29 +15,27 @@ class UserController
     $page = (int)($_GET['page'] ?? 1);
     $limit = 10;
     $offset = ($page - 1) * $limit;
-
-    // Get total users for pagination (using search to count)
-    $searchResults = $this->userModel->search($searchTerm, null);
-    $totalUsers = count($searchResults);
-    $totalPages = ceil($totalUsers / $limit);
-
-    // Get paginated users
-    $users = $this->userModel->paginate($limit, $offset);
+    $allUsers = $this->userModel->getAllUsers();
     if ($searchTerm) {
-      $users = array_filter($users, function ($user) use ($searchTerm) {
-        return stripos($user['userId'], $searchTerm) !== false || stripos($user['username'], $searchTerm) !== false;
+      $filteredUsers = array_filter($allUsers, function ($user) use ($searchTerm) {
+        return stripos($user['userId'], $searchTerm) !== false ||
+          stripos($user['username'], $searchTerm) !== false;
       });
-      $users = array_slice($users, 0, $limit);
+    } else {
+      $filteredUsers = $allUsers;
     }
+    $totalUsers = count($filteredUsers);
+    $totalPages = ceil($totalUsers / $limit);
+    $users = array_slice($filteredUsers, $offset, $limit);
+    $pagination = ($totalUsers > $limit);
 
     require_once PATH_VIEW_ADMIN . 'users/index.php';
   }
 
   public function create()
   {
-    $inputData = [];
+    $inputData = $_SESSION['userData'] ?? [];
     $errors = [];
-    echo $_SESSION['userData'];
     require_once PATH_VIEW_ADMIN . 'users/create.php';
   }
 
@@ -93,18 +91,21 @@ class UserController
 
   public function edit()
   {
+
     $userId = $_GET['userId'] ?? null;
     if (!$userId) {
       $_SESSION['error'] = "Không tìm thấy ID người dùng.";
       header("Location: " . BASE_URL_ADMIN . "?action=users-index");
       exit();
     }
+
     $userData = $this->userModel->getUserById($userId);
     if (!$userData) {
       $_SESSION['error'] = "Không tìm thấy người dùng.";
       header("Location: " . BASE_URL_ADMIN . "?action=users-index");
       exit();
     }
+
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $inputData = $_POST;
       $errors = $this->validateUserData($inputData, true);
@@ -120,7 +121,7 @@ class UserController
         exit();
       }
     } else {
-
+      $inputData = $userData;
       require_once PATH_VIEW_ADMIN . 'users/edit.php';
     }
   }
@@ -136,6 +137,8 @@ class UserController
         $editData = $_SESSION['editUserData'];
         $userId = (int)$editData['userId'];
         $data = [
+          'username'      => $editData['username'],
+          'password'      =>  hashPassword($editData['password']),
           'fullname'      => $editData['name'],
           'email'         => $editData['email'],
           'birthDate'     => !empty($editData['birthdate']) ? $editData['birthdate'] : null,
@@ -165,8 +168,13 @@ class UserController
   public function delete()
   {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-      // Lấy userId từ POST
       $userId = $_POST['userId'] ?? '';
+      if (empty($userId) || !is_numeric($userId)) {
+        $_SESSION['error'] = "※Không tìm thấy ID người dùng.";
+        header("Location: " . BASE_URL_ADMIN . "?action=users-index");
+        exit();
+      }
+
       if ($this->userModel->deleteByUserId((int)$userId)) {
         $_SESSION['success'] = "Người dùng đã được xóa thành công.";
       } else {
@@ -183,15 +191,15 @@ class UserController
   public function multidelete()
   {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-      // Nhận danh sách userId đã tick (JSON string)
       $userIdsJSON = $_POST['userIds'] ?? '[]';
       $userIds = json_decode($userIdsJSON, true);
 
       if (!empty($userIds)) {
-        foreach ($userIds as $userId) {
-          $this->userModel->deleteByUserId((int)$userId);
+        if ($this->userModel->deleteMultipleUsers($userIds)) {
+          $_SESSION['success'] = "Đã xóa các người dùng được chọn.";
+        } else {
+          $_SESSION['error'] = "※Không thể xóa người dùng nào.";
         }
-        $_SESSION['success'] = "Đã xóa các người dùng được chọn.";
       } else {
         $_SESSION['error'] = "Không có người dùng nào được chọn.";
       }
@@ -208,27 +216,21 @@ class UserController
       if (empty($data['username'])) {
         $errors['username'] = "※Tên đăng nhập là bắt buộc.";
       } else {
-        $existingUsers = $this->userModel->search($data['username'], null);
-        if (!empty($existingUsers)) {
+        if ($this->userModel->checkUsernameExists($data['username'])) {
           $errors['username'] = "※Tên đăng nhập đã tồn tại.";
         }
       }
     }
 
-    // Name
     if (empty($data['name'])) {
       $errors['name'] = "※Tên người dùng là bắt buộc.";
     }
-
-    if (!$isEdit) {
-      if (empty($data['password'])) {
-        $errors['password'] = "※Mật khẩu là bắt buộc.";
-      } elseif (!preg_match('/^(?=.*[a-z])(?=.*\d)(?=.*[^\w]).{8,}$/', $data['password'])) {
-        $errors['password'] = "※Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ thường, số và ký tự đặc biệt.";
-      }
+    if (empty($data['password'])) {
+      $errors['password'] = "※Mật khẩu là bắt buộc.";
+    } elseif (!preg_match('/^(?=.*[a-z])(?=.*\d)(?=.*[^\w]).{8,}$/', $data['password'])) {
+      $errors['password'] = "※Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ thường, số và ký tự đặc biệt.";
     }
 
-    // Email
     if (empty($data['email'])) {
       $errors['email'] = "※Email là bắt buộc.";
     } elseif (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
@@ -243,7 +245,6 @@ class UserController
       $errors['department'] = "※Phòng ban là bắt buộc.";
     }
 
-    // Status
     if (empty($data['status'])) {
       $errors['status'] = "※Trạng thái là bắt buộc.";
     }

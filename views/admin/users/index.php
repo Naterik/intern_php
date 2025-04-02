@@ -36,7 +36,7 @@ $currentPage = 'Quản lý người dùng';
             <a href="<?php echo BASE_URL_ADMIN; ?>?action=users-create">
               <button class="action-button-create" type="button">Thêm mới</button>
             </a>
-            <?php if (isset($_SESSION['categoryUser']) && strcasecmp($_SESSION['categoryUser'], 'admin') === 0): ?>
+            <?php if (isset($_SESSION['categoryUser']) && strcasecmp($_SESSION['categoryUser'], 'admin') === 0 || strcasecmp($_SESSION['categoryUser'], 'manager') === 0): ?>
               <button class="action-button-delete" type="button" onclick="confirmMultiDelete()">Xóa nhiều</button>
             <?php endif; ?>
           </div>
@@ -59,7 +59,9 @@ $currentPage = 'Quản lý người dùng';
                 <th>Tên người dùng</th>
                 <th>Ngày lập</th>
                 <th>Trạng thái</th>
-                <th>Hành động</th>
+                <?php if (isset($_SESSION['categoryUser']) && strcasecmp($_SESSION['categoryUser'], 'admin') === 0 || strcasecmp($_SESSION['categoryUser'], 'manager') === 0): ?>
+                  <th>Hành động</th>
+                <?php endif; ?>
               </tr>
             </thead>
             <tbody>
@@ -80,14 +82,18 @@ $currentPage = 'Quản lý người dùng';
                     <td><?php echo htmlspecialchars($user['username']); ?></td>
                     <td><?php echo date('Y-m-d', strtotime($user['created_at'])); ?></td>
                     <td><?php echo htmlspecialchars($user['status'] ?? 'Đang hoạt động'); ?></td>
-                    <td>
-                      <a href="<?php echo BASE_URL_ADMIN; ?>?action=users-edit&userId=<?php echo $user['userId']; ?>">
-                        <button type="button" class="button-table button-edit">Sửa</button>
-                      </a>
-                      <?php if (isset($_SESSION['categoryUser']) && strcasecmp($_SESSION['categoryUser'], 'admin') === 0): ?>
-                        <button type="button" class="button-table button-delete" onclick="confirmDeleteSingle('<?php echo $user['userId']; ?>')">Xóa</button>
-                      <?php endif; ?>
-                    </td>
+                    <?php if (isset($_SESSION['categoryUser']) && strcasecmp($_SESSION['categoryUser'], 'admin') === 0 || strcasecmp($_SESSION['categoryUser'], 'manager') === 0): ?>
+                      <td>
+                        <?php if (isset($_SESSION['categoryUser']) && strcasecmp($_SESSION['categoryUser'], 'admin') === 0 || strcasecmp($_SESSION['categoryUser'], 'manager') === 0): ?>
+                          <a href="<?php echo BASE_URL_ADMIN; ?>?action=users-edit&userId=<?php echo $user['userId']; ?>">
+                            <button type="button" class="button-table button-edit">Sửa</button>
+                          </a>
+                        <?php endif; ?>
+                        <?php if (isset($_SESSION['categoryUser']) && strcasecmp($_SESSION['categoryUser'], 'admin') === 0 || strcasecmp($_SESSION['categoryUser'], 'manager') === 0): ?>
+                          <button type="button" class="button-table button-delete" onclick="confirmDeleteSingle('<?php echo $user['userId']; ?>')">Xóa</button>
+                        <?php endif; ?>
+                      </td>
+                    <?php endif; ?>
                   </tr>
                 <?php endforeach; ?>
               <?php endif; ?>
@@ -170,7 +176,14 @@ $currentPage = 'Quản lý người dùng';
     });
 
     function confirmDeleteSingle(userId) {
-      document.getElementById('user-form').action = '?action=users-delete';
+      const form = document.getElementById('user-form');
+      const userIdInput = document.createElement('input');
+      userIdInput.type = 'hidden';
+      userIdInput.name = 'userId';
+      userIdInput.value = userId;
+      form.appendChild(userIdInput);
+
+      form.action = '?action=users-delete';
       document.getElementById('form-action').value = 'users-delete';
       window.showConfirmDialog(true);
     }

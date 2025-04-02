@@ -1,8 +1,9 @@
 <?php
 $currentPage = 'Xác nhận chỉnh sửa người dùng';
 ?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
   <meta charset="UTF-8">
@@ -28,29 +29,34 @@ $currentPage = 'Xác nhận chỉnh sửa người dùng';
           <form id="user-form" method="POST" action="<?php echo BASE_URL_ADMIN; ?>?action=users-update">
             <input type="hidden" name="confirm" value="true">
             <input type="hidden" name="username" value="<?php echo htmlspecialchars($_SESSION['editUserData']['username'] ?? ''); ?>">
+            <input type="hidden" name="userId" value="<?php echo htmlspecialchars($_SESSION['editUserData']['userId'] ?? ''); ?>">
             <div class="form">
               <label>Tên đăng nhập</label>
               <input type="text" value="<?php echo htmlspecialchars($_SESSION['editUserData']['username'] ?? ''); ?>" disabled>
             </div>
             <div class="form">
               <label>Tên người dùng<span>*</span></label>
-              <input type="text" name="name" value="<?php echo htmlspecialchars($_SESSION['editUserData']['name']); ?>" disabled>
+              <input type="text" name="name" value="<?php echo htmlspecialchars($_SESSION['editUserData']['name'] ?? ''); ?>" disabled>
             </div>
             <div class="form">
               <label>Email</label>
-              <input type="text" name="email" value="<?php echo htmlspecialchars($_SESSION['editUserData']['email']); ?>" disabled>
+              <input type="text" name="email" value="<?php echo htmlspecialchars($_SESSION['editUserData']['email'] ?? ''); ?>" disabled>
+            </div>
+            <div class="form">
+              <label>Mật khẩu</label>
+              <input type="password" name="password" value="<?php echo htmlspecialchars($_SESSION['editUserData']['password'] ?? ''); ?>" disabled>
             </div>
             <div class="form">
               <label>Ngày sinh</label>
-              <input type="text" id="datetimepicker" name="birthdate" value="<?php echo htmlspecialchars($_SESSION['editUserData']['birthdate']); ?>" disabled>
+              <input type="text" id="datetimepicker" name="birthdate" value="<?php echo htmlspecialchars($_SESSION['editUserData']['birthdate'] ?? ''); ?>" disabled>
             </div>
             <div class="form">
               <label>Loại người dùng<span>*</span></label>
-              <input type="text" name="user_type" value="<?php echo htmlspecialchars($_SESSION['editUserData']['user_type']); ?>" disabled>
+              <input type="text" name="user_type" value="<?php echo htmlspecialchars($_SESSION['editUserData']['user_type'] ?? ''); ?>" disabled>
             </div>
             <div class="form">
               <label>Phòng ban<span>*</span></label>
-              <input type="text" name="department" value="<?php echo htmlspecialchars($_SESSION['editUserData']['department']); ?>" disabled>
+              <input type="text" name="department" value="<?php echo htmlspecialchars($_SESSION['editUserData']['department'] ?? ''); ?>" disabled>
             </div>
             <div class="form">
               <label>Trạng thái</label>
@@ -69,7 +75,7 @@ $currentPage = 'Xác nhận chỉnh sửa người dùng';
   <script src="<?php echo BASE_ASSETS_JS; ?>popup.js"></script>
   <script>
     function goBack() {
-      window.location.href = '<?php echo BASE_URL_ADMIN; ?>?action=users-edit&userId=<?php echo $_SESSION['editUserData']['userId']; ?>';
+      window.location.href = '<?php echo BASE_URL_ADMIN; ?>?action=users-edit&userId=<?php echo htmlspecialchars($_SESSION['editUserData']['userId'] ?? ''); ?>';
     }
   </script>
 </body>

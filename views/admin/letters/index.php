@@ -65,7 +65,7 @@ $currentPage = 'Quản lý đơn';
                 ?>
                 <tr class="<?php echo $rowClass; ?>">
                   <td><?php echo $offset + $index + 1; ?></td>
-                  <td><?php echo htmlspecialchars($letter['userId'] ?? ''); ?></td>
+                  <td><?php echo htmlspecialchars($letter['username'] ?? ''); ?></td>
                   <td><?php echo htmlspecialchars($letter['typesOfApplication'] ?? ''); ?></td>
                   <td><?php echo htmlspecialchars($letter['startDate'] ?? ''); ?></td>
                   <td style="font-weight: 600;"><?php echo $statusText; ?></td>
@@ -73,15 +73,17 @@ $currentPage = 'Quản lý đơn';
                   <td>
                     <div class="table-td">
                       <span><?php echo htmlspecialchars($letter['content'] ?? ''); ?></span>
-                      <?php if ($status == 'đơn mới'): ?>
-                        <div class="button-table-action">
+                      <?php if (isset($_SESSION['categoryUser']) && strcasecmp($_SESSION['categoryUser'], 'admin') === 0 || strcasecmp($_SESSION['categoryUser'], 'manager') === 0): ?>
+                        <?php if ($status == 'đơn mới'): ?>
                           <div class="button-table-action">
-                            <a href="<?php echo BASE_URL_ADMIN; ?>?action=letters-approve&letterId=<?php echo $letter['letterId']; ?>">
-                              <button class="button-table button-approve">Duyệt</button>
-                            </a>
-                            <button class="button-table button-cancel" onclick="showCancelDialog(<?php echo $letter['letterId']; ?>)">Hủy</button>
+                            <div class="button-table-action">
+                              <a href="<?php echo BASE_URL_ADMIN; ?>?action=letters-approve&letterId=<?php echo $letter['letterId']; ?>">
+                                <button class="button-table button-approve">Duyệt</button>
+                              </a>
+                              <button class="button-table button-cancel" onclick="showCancelDialog(<?php echo $letter['letterId']; ?>)">Hủy</button>
+                            </div>
                           </div>
-                        </div>
+                        <?php endif; ?>
                       <?php endif; ?>
                     </div>
                   </td>

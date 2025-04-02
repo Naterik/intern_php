@@ -41,7 +41,11 @@ class BaseModel
   }
   public function search($searchUsername = null, $searchUserId = null)
   {
+
     try {
+      if ($searchUsername === null && $searchUserId === null) {
+        return [];
+      }
       $stmt = $this->pdo->prepare('CALL GetSearch(:p_searchUsername, :p_searchUserId)');
       $stmt->bindParam(':p_searchUsername', $searchUsername, PDO::PARAM_STR);
       $stmt->bindParam(':p_searchUserId', $searchUserId, PDO::PARAM_INT);
@@ -105,22 +109,6 @@ class BaseModel
     }
   }
 
-  public function delete($whereClause)
-  {
-    try {
-      $this->beginTransaction();
-      $stmt = $this->pdo->prepare('CALL GenericDelete(:p_tableName, :p_whereClause)');
-      $stmt->bindParam(':p_tableName', $this->table, PDO::PARAM_STR);
-      $stmt->bindParam(':p_whereClause', $whereClause, PDO::PARAM_STR);
-      $stmt->execute();
-
-      $this->commit();
-      return true;
-    } catch (PDOException $e) {
-      $this->rollBack();
-      throw new Exception("Lỗi khi xóa bản ghi: " . $e->getMessage());
-    }
-  }
 
   public function paginate($limitVal, $offsetVal)
   {

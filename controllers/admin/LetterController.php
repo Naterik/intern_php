@@ -22,26 +22,32 @@ class LetterController
     $page = (int)($_GET['page'] ?? 1);
     $limit = 10;
     $offset = ($page - 1) * $limit;
-    $allLetters = $this->letterModel->getAllLetters();
+
+    // Lấy dữ liệu từ cả hai bảng
+    $allLetters = $this->letterModel->getAllLettersWithUsernames();
+
     if ($searchTerm) {
       $filteredLetters = array_filter($allLetters, function ($letter) use ($searchTerm) {
-        return stripos($letter['userId'], $searchTerm) !== false ||
+        return stripos($letter['username'], $searchTerm) !== false ||
           stripos($letter['typesOfApplication'], $searchTerm) !== false ||
           stripos($letter['content'], $searchTerm) !== false;
       });
     } else {
       $filteredLetters = $allLetters;
     }
+
     $totalLetters = count($filteredLetters);
     $totalPages = ceil($totalLetters / $limit);
     $data = array_slice($filteredLetters, $offset, $limit);
     $pagination = ($totalLetters > $limit);
+
     require_once PATH_VIEW_ADMIN . 'letters/index.php';
   }
 
+
   public function create()
   {
-    $inputData = [];
+    $inputData = $_SESSION['letterData'] ?? [];
     $errors = [];
     if (!isset($_SESSION['userId']) || empty($_SESSION['userId'])) {
       $_SESSION['error'] = "Vui lòng đăng nhập để tạo đơn.";
@@ -51,7 +57,7 @@ class LetterController
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       if (isset($_POST['next'])) {
-        $inputData = $_POST;
+        $inputData = array_merge($inputData, $_POST);
         $errors = $this->validateLetterData($inputData);
 
         if (empty($errors)) {
@@ -67,7 +73,10 @@ class LetterController
             } else {
               $errors['attach'] = 'Có lỗi xảy ra khi upload file';
             }
-          } else {
+          }
+
+          // Kiểm tra nếu không có file mới và không có attachment cũ
+          if (!isset($inputData['attachment']) || empty($inputData['attachment'])) {
             $errors['attach'] = 'Vui lòng chọn một file để upload';
           }
 
@@ -81,10 +90,38 @@ class LetterController
       } elseif (isset($_POST['clear'])) {
         $inputData = [];
         $errors = [];
+        unset($_SESSION['letterData']);
       }
     }
 
     require_once PATH_VIEW_ADMIN . 'letters/create.php';
+  }
+
+  private function validateLetterData($data)
+  {
+    $errors = [];
+
+    if (empty($data['title'])) {
+      $errors['title'] = "Tiêu đề không được để trống.";
+    }
+
+    if (empty($data['approver'])) {
+      $errors['approver'] = "Người duyệt không được để trống.";
+    }
+
+    if (empty($data['typesOfApplication'])) {
+      $errors['typesOfApplication'] = "Loại đơn không được để trống.";
+    }
+
+    if (empty($data['startDate'])) {
+      $errors['startDate'] = "Ngày bắt đầu không được để trống.";
+    }
+
+    if (empty($data['endDate'])) {
+      $errors['endDate'] = "Ngày kết thúc không được để trống.";
+    }
+
+    return $errors;
   }
 
   public function save()
@@ -138,8 +175,15 @@ class LetterController
       return;
     }
 
-    if (!isset($_SESSION['userId']) || !isset($_SESSION['categoryUser']) || strtolower(trim($_SESSION['categoryUser'])) !== 'admin') {
-      $errorMessage = "Chỉ admin mới có quyền duyệt đơn!";
+    if (!isset($_SESSION['userId']) || !isset($_SESSION['categoryUser'])) {
+      $errorMessage = "Vui lòng đăng nhập để duyệt đơn.";
+      require_once PATH_VIEW_ADMIN . 'letters/approve.php';
+      return;
+    }
+
+    $categoryUser = strtolower(trim($_SESSION['categoryUser']));
+    if ($categoryUser !== 'admin' && $categoryUser !== 'manager') {
+      $errorMessage = "Chỉ admin và manager mới có quyền duyệt đơn!";
       require_once PATH_VIEW_ADMIN . 'letters/approve.php';
       return;
     }
@@ -163,16 +207,16 @@ class LetterController
           $message .= " Lý do: " . $reason;
         }
 
-        // Lấy email của người dùng (người tạo đơn)
-        $userEmail = $_SESSION['email'];
-        if (empty($userEmail)) {
-          $errorMessage = "Không tìm thấy email của người dùng!";
+        $creator = $this->userModel->getApproverById($letter['userId']);
+        if (!$creator || empty($creator['email'])) {
+          $errorMessage = "Không tìm thấy email của người tạo đơn!";
           require_once PATH_VIEW_ADMIN . 'letters/approve.php';
           return;
         }
+        $userEmail = $creator['email'];
 
         // Lấy thông tin người duyệt (approver)
-        $approver = $this->userModel->getAdminUserById($letter['approver']);
+        $approver = $this->userModel->getApproverById($letter['approver']);
         if (!$approver) {
           $errorMessage = "Không tìm thấy thông tin người duyệt!";
           require_once PATH_VIEW_ADMIN . 'letters/approve.php';
@@ -186,7 +230,6 @@ class LetterController
         header("Location: " . BASE_URL_ADMIN . "?action=letters-index");
         exit();
       } else {
-        // Nếu cập nhật thất bại (ví dụ: không có quyền), truyền thông báo lỗi vào view
         $errorMessage = $result['message'];
       }
     }
@@ -231,42 +274,5 @@ class LetterController
     } catch (Exception $e) {
       error_log("Lỗi gửi email: " . $mail->ErrorInfo);
     }
-  }
-
-  public function validateLetterData(array $data)
-  {
-    $errors = [];
-
-    if (empty(trim($data['title']))) {
-      $errors['title'] = '※Tiêu đề không được để trống';
-    }
-
-    if (empty($data['approver'])) {
-      $errors['approver'] = '※Vui lòng chọn người duyệt';
-    }
-
-    if (empty($data['typesOfApplication'])) {
-      $errors['typesOfApplication'] = '※Vui lòng chọn loại đơn';
-    }
-
-    if (empty($data['startDate'])) {
-      $errors['startDate'] = '※Ngày bắt đầu không được để trống';
-    }
-
-    if (empty($data['endDate'])) {
-      $errors['endDate'] = '※Ngày kết thúc không được để trống';
-    }
-
-    if (isset($_POST['next']) && (!isset($_FILES['attach']) || $_FILES['attach']['error'] !== UPLOAD_ERR_OK)) {
-      $errors['attachment'] = '※Vui lòng chọn file đính kèm';
-    } elseif (isset($_FILES['attach']) && $_FILES['attach']['error'] === UPLOAD_ERR_OK) {
-      $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
-      $fileType = mime_content_type($_FILES['attach']['tmp_name']);
-      if (!in_array($fileType, $allowedTypes)) {
-        $errors['attachment'] = '※Chỉ cho phép upload các file hình ảnh được hỗ trợ';
-      }
-    }
-
-    return $errors;
   }
 }

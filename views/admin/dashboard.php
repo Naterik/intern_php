@@ -9,7 +9,7 @@ $currentPage = 'Dashboard';
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" type="text/css" href="<?php echo BASE_ASSETS_ADMIN; ?>header.css">
   <link rel="stylesheet" type="text/css" href="<?php echo BASE_ASSETS_ADMIN; ?>sidebar.css">
-  <link rel="stylesheet" type="text/css" href="<?php echo BASE_ASSETS_ADMIN; ?>dashboard.css">
+  <link rel="stylesheet" type="text/css" href="<?php echo BASE_ASSETS_ADMIN; ?>dashboardss.css">
   <title>
     <?php if (isset($_SESSION["username"])) {
       $username = $_SESSION["username"];
