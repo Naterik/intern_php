@@ -1,5 +1,7 @@
 <?php
 $currentPage = 'Quản lý người dùng';
+$errors = $errors ?? [];
+$inputData = $inputData ?? [];
 ?>
 
 <!DOCTYPE html>
@@ -40,7 +42,7 @@ $currentPage = 'Quản lý người dùng';
               <div class="input-form <?php echo isset($errors['name']) ? 'has-error' : ''; ?>">
                 <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($inputData['name'] ?? ''); ?>">
                 <?php if (isset($errors['name'])): ?>
-                  <span class="error" data-field="name"><?php echo $errors['name']; ?></span>
+                  <span class="error"><?php echo $errors['name']; ?></span>
                 <?php endif; ?>
               </div>
             </div>
@@ -49,7 +51,7 @@ $currentPage = 'Quản lý người dùng';
               <div class="input-form <?php echo isset($errors['password']) ? 'has-error' : ''; ?>">
                 <input type="password" id="password" name="password" value="<?php echo htmlspecialchars($inputData['password'] ?? ''); ?>" autocomplete="new-password">
                 <?php if (isset($errors['password'])): ?>
-                  <span class="error" data-field="password"><?php echo $errors['password']; ?></span>
+                  <span class="error"><?php echo $errors['password']; ?></span>
                 <?php endif; ?>
               </div>
             </div>
@@ -58,7 +60,7 @@ $currentPage = 'Quản lý người dùng';
               <div class="input-form <?php echo isset($errors['email']) ? 'has-error' : ''; ?>">
                 <input type="text" id="email" name="email" value="<?php echo htmlspecialchars($inputData['email'] ?? ''); ?>">
                 <?php if (isset($errors['email'])): ?>
-                  <span class="error" data-field="email"><?php echo $errors['email']; ?></span>
+                  <span class="error"><?php echo $errors['email']; ?></span>
                 <?php endif; ?>
               </div>
             </div>
@@ -78,7 +80,7 @@ $currentPage = 'Quản lý người dùng';
                   <option value="manager" <?php echo ($inputData['user_type'] ?? '') === 'manager' ? 'selected' : ''; ?>>Manager</option>
                 </select>
                 <?php if (isset($errors['user_type'])): ?>
-                  <span class="error" data-field="user_type"><?php echo $errors['user_type']; ?></span>
+                  <span class="error"><?php echo $errors['user_type']; ?></span>
                 <?php endif; ?>
               </div>
             </div>
@@ -92,7 +94,7 @@ $currentPage = 'Quản lý người dùng';
                   <option value="Marketing" <?php echo ($inputData['department'] ?? '') === 'Marketing' ? 'selected' : ''; ?>>Marketing</option>
                 </select>
                 <?php if (isset($errors['department'])): ?>
-                  <span class="error" data-field="department"><?php echo $errors['department']; ?></span>
+                  <span class="error"><?php echo $errors['department']; ?></span>
                 <?php endif; ?>
               </div>
             </div>
@@ -100,12 +102,12 @@ $currentPage = 'Quản lý người dùng';
               <label for="status">Trạng thái<span class="required-mark">*</span></label>
               <div class="input-form <?php echo isset($errors['status']) ? 'has-error' : ''; ?>">
                 <select name="status" id="status">
-                  <option value="" disabled <?php echo empty($inputData['status']) ? 'selected' : ''; ?>>Values</option>
+                  <option value="" disabled <?php echo empty($inputData['status']) ? 'selected' : ''; ?>>Chọn trạng thái</option>
                   <option value="Đang hoạt động" <?php echo ($inputData['status'] ?? '') === 'Đang hoạt động' ? 'selected' : ''; ?>>Đang hoạt động</option>
                   <option value="Không hoạt động" <?php echo ($inputData['status'] ?? '') === 'Không hoạt động' ? 'selected' : ''; ?>>Không hoạt động</option>
                 </select>
                 <?php if (isset($errors['status'])): ?>
-                  <span class="error" data-field="status"><?php echo $errors['status']; ?></span>
+                  <span class="error"><?php echo $errors['status']; ?></span>
                 <?php endif; ?>
               </div>
             </div>
@@ -118,9 +120,6 @@ $currentPage = 'Quản lý người dùng';
       </div>
     </main>
   </div>
-  <script>
-    window.errors = <?php echo json_encode($errors); ?>;
-  </script>
   <script src="<?php echo BASE_ASSETS_JS; ?>user.js"></script>
 </body>
 

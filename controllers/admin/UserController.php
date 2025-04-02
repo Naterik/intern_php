@@ -91,14 +91,7 @@ class UserController
 
   public function edit()
   {
-
     $userId = $_GET['userId'] ?? null;
-    if (!$userId) {
-      $_SESSION['error'] = "Không tìm thấy ID người dùng.";
-      header("Location: " . BASE_URL_ADMIN . "?action=users-index");
-      exit();
-    }
-
     $userData = $this->userModel->getUserById($userId);
     if (!$userData) {
       $_SESSION['error'] = "Không tìm thấy người dùng.";
@@ -108,15 +101,14 @@ class UserController
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $inputData = $_POST;
-      $errors = $this->validateUserData($inputData, true);
+      $errors = $this->validateUserData($inputData, true, $userData);
 
       if (!empty($errors)) {
-
         require_once PATH_VIEW_ADMIN . 'users/edit.php';
       } else {
-
         $_SESSION['editUserData'] = $inputData;
         $_SESSION['editUserData']['userId'] = $userId;
+        if (ob_get_length()) ob_clean();
         header("Location: " . BASE_URL_ADMIN . "?action=users-update");
         exit();
       }
@@ -131,14 +123,13 @@ class UserController
     if (isset($_POST['confirm']) && $_POST['confirm'] === 'true') {
       try {
         if (empty($_SESSION['editUserData'])) {
-          throw new Exception("Invalid session data");
+          throw new Exception("Dữ liệu session không tồn tại.");
         }
-
         $editData = $_SESSION['editUserData'];
         $userId = (int)$editData['userId'];
         $data = [
           'username'      => $editData['username'],
-          'password'      =>  hashPassword($editData['password']),
+          'password'      => hashPassword($editData['password']),
           'fullname'      => $editData['name'],
           'email'         => $editData['email'],
           'birthDate'     => !empty($editData['birthdate']) ? $editData['birthdate'] : null,
@@ -147,20 +138,22 @@ class UserController
           'status'        => $editData['status']
         ];
 
-        // Thực hiện update với transaction
         $this->userModel->update($data, "userId = $userId");
-
         unset($_SESSION['editUserData']);
         $_SESSION['success'] = "Cập nhật thành công!";
         header("Location: " . BASE_URL_ADMIN . "?action=users-index");
         exit();
       } catch (Exception $e) {
-        error_log("Lỗi cập nhật: " . $e->getMessage());
         $_SESSION['error'] = "Lỗi hệ thống: " . $e->getMessage();
         header("Location: " . BASE_URL_ADMIN . "?action=users-edit&userId=" . ($userId ?? 0));
         exit();
       }
     } else {
+      if (empty($_SESSION['editUserData'])) {
+        $_SESSION['error'] = "Dữ liệu không hợp lệ.";
+        header("Location: " . BASE_URL_ADMIN . "?action=users-index");
+        exit();
+      }
       require_once PATH_VIEW_ADMIN . 'users/edit.confirm.php';
     }
   }
@@ -208,7 +201,7 @@ class UserController
     }
   }
 
-  private function validateUserData($data, $isEdit = false)
+  private function validateUserData($data, $isEdit = false, $originalData = [])
   {
     $errors = [];
 
@@ -222,29 +215,51 @@ class UserController
       }
     }
 
+    // Kiểm tra Họ và tên
     if (empty($data['name'])) {
       $errors['name'] = "※Tên người dùng là bắt buộc.";
     }
-    if (empty($data['password'])) {
-      $errors['password'] = "※Mật khẩu là bắt buộc.";
-    } elseif (!preg_match('/^(?=.*[a-z])(?=.*\d)(?=.*[^\w]).{8,}$/', $data['password'])) {
-      $errors['password'] = "※Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ thường, số và ký tự đặc biệt.";
+
+    // Kiểm tra mật khẩu
+    if ($isEdit && !empty($originalData)) {
+      // Nếu mật khẩu không thay đổi (giữ nguyên giá trị cũ), bỏ qua validate
+      if (isset($data['password']) && $data['password'] === $originalData['password']) {
+        // Không làm gì, bỏ qua validate
+      } else {
+        // Nếu mật khẩu thay đổi
+        if (empty($data['password'])) {
+          $errors['password'] = "※Mật khẩu không được để trống khi thay đổi.";
+        } elseif (!preg_match('/^(?=.*[a-z])(?=.*\d)(?=.*[^\w]).{8,}$/', $data['password'])) {
+          $errors['password'] = "※Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ thường, số và ký tự đặc biệt.";
+        }
+      }
+    } elseif (!$isEdit) {
+      // Trường hợp tạo mới, luôn validate mật khẩu
+      if (empty($data['password'])) {
+        $errors['password'] = "※Mật khẩu là bắt buộc.";
+      } elseif (!preg_match('/^(?=.*[a-z])(?=.*\d)(?=.*[^\w]).{8,}$/', $data['password'])) {
+        $errors['password'] = "※Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ thường, số và ký tự đặc biệt.";
+      }
     }
 
+    // Kiểm tra Email
     if (empty($data['email'])) {
       $errors['email'] = "※Email là bắt buộc.";
     } elseif (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
       $errors['email'] = "※Email không hợp lệ.";
     }
 
+    // Kiểm tra Loại người dùng
     if (empty($data['user_type'])) {
       $errors['user_type'] = "※Loại người dùng là bắt buộc.";
     }
 
+    // Kiểm tra Phòng ban
     if (empty($data['department'])) {
       $errors['department'] = "※Phòng ban là bắt buộc.";
     }
 
+    // Kiểm tra Trạng thái
     if (empty($data['status'])) {
       $errors['status'] = "※Trạng thái là bắt buộc.";
     }

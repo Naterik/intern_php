@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+  // Khởi tạo Flatpickr cho trường ngày sinh
   const datetimePicker = document.getElementById("datetimepicker");
   if (datetimePicker) {
     flatpickr("#datetimepicker", {
@@ -6,6 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
       minDate: "1900-01-01",
       maxDate: "2100-12-31",
       enableTime: false,
+      defaultDate: datetimePicker.value || null,
     });
   }
 
@@ -14,10 +16,12 @@ document.addEventListener("DOMContentLoaded", function () {
   const errors = document.querySelectorAll(".error");
 
   if (form && requiredStars.length > 0) {
+    // Ẩn các ngôi sao yêu cầu ban đầu
     requiredStars.forEach((star) => {
       star.style.display = "none";
     });
 
+    // Xử lý lỗi từ server
     errors.forEach((error) => {
       const errorText = error.textContent.trim();
       const correspondingStar = error
@@ -35,29 +39,33 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
+    // Hàm xử lý nút "Xóa trống"
     function clearForm() {
-      const editableInputs = document.querySelectorAll(
-        "input:not([disabled]), select"
+      // Lấy tất cả các input và select (bao gồm username, không loại trừ disabled nữa)
+      const allInputs = form.querySelectorAll(
+        "input:not([type='hidden']), select"
       );
-      editableInputs.forEach((input) => {
+
+      allInputs.forEach((input) => {
         if (input.type === "text" || input.type === "password") {
-          input.value = "";
+          input.value = ""; // Xóa trống các trường text/password
         } else if (input.tagName === "SELECT") {
-          input.selectedIndex = 0;
+          input.selectedIndex = 0; // Đặt select về giá trị đầu tiên
         }
       });
 
-      const hiddenInputs = document.querySelectorAll('input[type="hidden"]');
-      hiddenInputs.forEach((input) => {
-        input.value = "";
-      });
+      // Xóa giá trị của Flatpickr
+      if (datetimePicker) {
+        flatpickr("#datetimepicker").clear();
+      }
 
+      // Xóa các thông báo lỗi và trạng thái lỗi
       errors.forEach((error) => {
         error.textContent = "";
         const correspondingStar = error
           .closest(".form")
           .querySelector(".required-mark");
-        correspondingStar.style.display = "none";
+        if (correspondingStar) correspondingStar.style.display = "none";
         const parentForm = error.closest(".input-form");
         if (parentForm) parentForm.classList.remove("has-error");
       });

@@ -73,7 +73,7 @@ $currentPage = 'Quản lý đơn';
                   <td>
                     <div class="table-td">
                       <span><?php echo htmlspecialchars($letter['content'] ?? ''); ?></span>
-                      <?php if (isset($_SESSION['categoryUser']) && strcasecmp($_SESSION['categoryUser'], 'admin') === 0 || strcasecmp($_SESSION['categoryUser'], 'manager') === 0): ?>
+                      <?php if (isset($_SESSION['categoryUser']) && strcasecmp($_SESSION['categoryUser'], 'admin') === 0 || strcasecmp($_SESSION['categoryUser'], 'manager') === 0 && $letter['approver'] === $_SESSION['userId']): ?>
                         <?php if ($status == 'đơn mới'): ?>
                           <div class="button-table-action">
                             <div class="button-table-action">
