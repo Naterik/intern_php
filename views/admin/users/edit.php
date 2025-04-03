@@ -78,7 +78,6 @@ $inputData = $inputData ?? [];
               <label>Loại người dùng<span class="required-mark">*</span></label>
               <div class="input-form <?php echo isset($errors['user_type']) ? 'has-error' : ''; ?>">
                 <select name="user_type" id="user_type">
-                  <option value="" disabled <?php echo empty($inputData['user_type']) ? 'selected' : ''; ?>>Chọn loại</option>
                   <option value="admin" <?php echo ($inputData['user_type'] ?? $userData['categoryUser'] ?? '') === 'admin' ? 'selected' : ''; ?>>Admin</option>
                   <option value="manager" <?php echo ($inputData['user_type'] ?? $userData['categoryUser'] ?? '') === 'manager' ? 'selected' : ''; ?>>Manager</option>
                   <option value="user" <?php echo ($inputData['user_type'] ?? $userData['categoryUser'] ?? '') === 'user' ? 'selected' : ''; ?>>User</option>
@@ -92,7 +91,6 @@ $inputData = $inputData ?? [];
               <label>Phòng ban<span class="required-mark">*</span></label>
               <div class="input-form <?php echo isset($errors['department']) ? 'has-error' : ''; ?>">
                 <select name="department" id="department">
-                  <option value="" disabled <?php echo empty($inputData['department']) ? 'selected' : ''; ?>>Chọn phòng ban</option>
                   <option value="IT" <?php echo ($inputData['department'] ?? $userData['department'] ?? '') === 'IT' ? 'selected' : ''; ?>>IT</option>
                   <option value="HR" <?php echo ($inputData['department'] ?? $userData['department'] ?? '') === 'HR' ? 'selected' : ''; ?>>HR</option>
                   <option value="Marketing" <?php echo ($inputData['department'] ?? $userData['department'] ?? '') === 'Marketing' ? 'selected' : ''; ?>>Marketing</option>

@@ -103,6 +103,7 @@ $inputData = $inputData ?? [];
                   <?php if (isset($inputData['attachment']) && !empty($inputData['attachment'])): ?>
                     <div class="file-display" style="display: block;">
                       <span class="file-name"><?php echo htmlspecialchars(basename($inputData['attachment'])); ?></span>
+                      <!-- Bỏ nút Xóa -->
                     </div>
                     <input type="hidden" name="attachment" value="<?php echo htmlspecialchars($inputData['attachment']); ?>">
                   <?php else: ?>
@@ -163,47 +164,12 @@ $inputData = $inputData ?? [];
           if (event.target.files.length > 0) {
             fileNameSpan.textContent = event.target.files[0].name;
             fileDisplay.appendChild(fileNameSpan);
-            fileDisplay.appendChild(document.createElement("button")).textContent = "Xóa";
-            fileDisplay.lastChild.type = "button";
-            fileDisplay.lastChild.className = "remove-file";
             fileDisplay.style.display = "block";
             fileLabel.style.display = "none";
             event.target.parentElement.appendChild(fileDisplay);
           }
         });
       }
-
-      // Xử lý xóa file
-      document.querySelectorAll(".remove-file").forEach(button => {
-        button.addEventListener("click", function() {
-          const fileDisplay = this.parentElement;
-          const inputForm = fileDisplay.parentElement;
-          const hiddenInput = inputForm.querySelector("input[name='attachment']");
-          const fileLabel = inputForm.querySelector(".custom-file-label") || document.createElement("label");
-          const newFileInput = document.createElement("input");
-
-          // Xóa input ẩn nếu có
-          if (hiddenInput) {
-            hiddenInput.remove();
-          }
-
-          // Xóa phần hiển thị file
-          fileDisplay.remove();
-
-          // Hiển thị lại input file
-          fileLabel.className = "custom-file-label";
-          fileLabel.htmlFor = "file-input";
-          fileLabel.innerHTML = '<span class="upload-icon"></span>';
-          newFileInput.type = "file";
-          newFileInput.name = "attach";
-          newFileInput.id = "file-input";
-          newFileInput.className = "custom-file-input";
-          newFileInput.accept = "image/*";
-
-          inputForm.appendChild(fileLabel);
-          inputForm.appendChild(newFileInput);
-        });
-      });
 
       // Xử lý nút "Xóa trống"
       document.querySelector('button[name="clear"]').addEventListener("click", function() {
