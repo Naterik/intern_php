@@ -104,7 +104,6 @@ $inputData = $inputData ?? [];
               <label>Trạng thái<span class="required-mark">*</span></label>
               <div class="input-form <?php echo isset($errors['status']) ? 'has-error' : ''; ?>">
                 <select name="status" id="status">
-                  <option value="" disabled <?php echo empty($inputData['status']) ? 'selected' : ''; ?>>Chọn trạng thái</option>
                   <option value="Đang hoạt động" <?php echo ($inputData['status'] ?? $userData['status'] ?? '') === 'Đang hoạt động' ? 'selected' : ''; ?>>Đang hoạt động</option>
                   <option value="Không hoạt động" <?php echo ($inputData['status'] ?? $userData['status'] ?? '') === 'Không hoạt động' ? 'selected' : ''; ?>>Không hoạt động</option>
                 </select>

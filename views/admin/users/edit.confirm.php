@@ -44,7 +44,7 @@ $currentPage = 'Xác nhận chỉnh sửa người dùng';
             </div>
             <div class="form">
               <label>Mật khẩu</label>
-              <input type="password" name="password" value="<?php echo htmlspecialchars($_SESSION['editUserData']['password'] ?? ''); ?>" disabled>
+              <input type="password" name="password" value="<?php echo htmlspecialchars(($editData['password'] ?? $currentUser['password']) !== $currentUser['password'] ? $editData['password'] : 'Không thay đổi'); ?>" disabled>
             </div>
             <div class="form">
               <label>Ngày sinh</label>

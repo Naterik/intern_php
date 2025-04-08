@@ -1,12 +1,6 @@
 <?php
 $currentPage = 'Quản lý đơn';
 
-// Lấy thông tin đơn từ controller
-if (!isset($letter)) {
-  $_SESSION['error'] = "Không tìm thấy thông tin đơn.";
-  header("Location: " . BASE_URL_ADMIN . "?action=letters-index");
-  exit();
-}
 ?>
 
 <!DOCTYPE html>
@@ -174,7 +168,6 @@ if (!isset($letter)) {
       form.submit();
     }
 
-    // Hiển thị alert nếu có errorMessage từ controller
     <?php if (isset($errorMessage)): ?>
       alert('<?php echo addslashes($errorMessage); ?>');
       window.location.href = '<?php echo BASE_URL_ADMIN; ?>?action=letters-index';

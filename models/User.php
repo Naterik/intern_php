@@ -67,10 +67,12 @@ class User extends BaseModel
   public function getApproverById($userId)
   {
     try {
-      $stmt = $this->pdo->prepare('CALL GetApproverById(:userId)');
+      $stmt = $this->pdo->prepare('CALL GetUserById(:userId)');
       $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
       $stmt->execute();
-      return $stmt->fetch(PDO::FETCH_ASSOC);
+      $result = $stmt->fetch(PDO::FETCH_ASSOC);
+      error_log("getApproverById($userId): " . print_r($result, true)); // Ghi log để kiểm tra
+      return $result;
     } catch (PDOException $e) {
       throw new Exception("Lỗi khi lấy thông tin người duyệt: " . $e->getMessage());
     }

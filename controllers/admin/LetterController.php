@@ -182,8 +182,14 @@ class LetterController
     }
 
     $categoryUser = strtolower(trim($_SESSION['categoryUser']));
+    $currentUserId = (int)$_SESSION['userId'];
     if ($categoryUser !== 'admin' && $categoryUser !== 'manager') {
       $errorMessage = "Chỉ admin và manager mới có quyền duyệt đơn!";
+      require_once PATH_VIEW_ADMIN . 'letters/approve.php';
+      return;
+    }
+    if ($categoryUser === 'manager' && $currentUserId !== (int)$letter['approver']) {
+      $errorMessage = "Bạn không phải người duyệt của đơn này!";
       require_once PATH_VIEW_ADMIN . 'letters/approve.php';
       return;
     }
@@ -196,8 +202,7 @@ class LetterController
         return;
       }
 
-      // Cập nhật trạng thái đơn và lấy kết quả
-      $result = $this->letterModel->updateLetterStatus($letterId, $newStatus, $_SESSION['userId']);
+      $result = $this->letterModel->updateLetterStatus($letterId, $newStatus, $currentUserId);
 
       if ($result['success']) {
         $message = "Đơn đã được " . $newStatus . " thành công!";
@@ -215,16 +220,20 @@ class LetterController
         }
         $userEmail = $creator['email'];
 
-        // Lấy thông tin người duyệt (approver)
-        $approver = $this->userModel->getApproverById($letter['approver']);
+        $approver = $this->userModel->getApproverById($currentUserId);
         if (!$approver) {
           $errorMessage = "Không tìm thấy thông tin người duyệt!";
           require_once PATH_VIEW_ADMIN . 'letters/approve.php';
           return;
         }
 
-        // Gửi email thông báo
-        $this->sendApprovalEmail($userEmail, $letter, $newStatus, $approver, $reason);
+        try {
+          $this->sendApprovalEmail($userEmail, $letter, $newStatus, $approver, $reason);
+        } catch (Exception $e) {
+          $errorMessage = $e->getMessage();
+          require_once PATH_VIEW_ADMIN . 'letters/approve.php';
+          return;
+        }
 
         $_SESSION['success'] = $message;
         header("Location: " . BASE_URL_ADMIN . "?action=letters-index");
@@ -233,46 +242,49 @@ class LetterController
         $errorMessage = $result['message'];
       }
     }
-
-    // Hiển thị form approve.php với thông báo lỗi nếu có
     require_once PATH_VIEW_ADMIN . 'letters/approve.php';
   }
 
   private function sendApprovalEmail($to, $letter, $status, $approver, $reason = null)
   {
+
     $mail = new PHPMailer(true);
     try {
-      // Cấu hình SMTP
       $mail->isSMTP();
-      $mail->Host = 'smtp.gmail.com';
-      $mail->SMTPAuth = true;
-      $mail->Username = 'khuonglol12@gmail.com';
-      $mail->Password = 'stfl bwqx fajo dcxm';
+      $mail->Host       = 'smtp.gmail.com';
+      $mail->SMTPAuth   = true;
+      $mail->Username   = 'lukhuong190703@gmail.com';
+      $mail->Password   = 'qwnk wxuz erhc bpos';
       $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-      $mail->Port = 587;
-
-      // Cấu hình email
+      $mail->Port       = 587;
       $mail->setFrom('khuonglol12@gmail.com', 'Admin');
+      $mail->addReplyTo('khuonglol12@gmail.com', 'Admin');
       $mail->addAddress($to);
-      $mail->Subject = "About your letter";
-      $mail->isHTML(true);
 
-      // Tạo nội dung email
-      $body = "<p>Đơn của bạn với tiêu đề: <strong>" . htmlspecialchars($letter['title']) . "</strong> " . htmlspecialchars($status) . ".</p>"
-        . "<p>Người duyệt: <strong>" . htmlspecialchars($approver['fullname']) . "</strong> (" . htmlspecialchars($approver['email']) . ")</p>"
-        . "<p>Loại đơn: <strong>" . htmlspecialchars($letter['typesOfApplication']) . "</strong></p>"
-        . "<p>Mô tả: " . htmlspecialchars($letter['content']) . "</p>";
+
+      $mail->Subject = "=?UTF-8?B?" . base64_encode("Thông báo trạng thái đơn của bạn") . "?=";
+      $mail->CharSet = 'UTF-8';
+      $mail->isHTML(true);
+      $body = "<p>Đơn của bạn với tiêu đề: <strong>" . htmlspecialchars($letter['title'], ENT_QUOTES, 'UTF-8') . "</strong> đã được " . htmlspecialchars($status, ENT_QUOTES, 'UTF-8') . ".</p>"
+        . "<p>Người duyệt: <strong>" . htmlspecialchars($approver['fullname'], ENT_QUOTES, 'UTF-8') . "</strong> (" . htmlspecialchars($approver['email'], ENT_QUOTES, 'UTF-8') . ")</p>"
+        . "<p>Loại đơn: <strong>" . htmlspecialchars($letter['typesOfApplication'], ENT_QUOTES, 'UTF-8') . "</strong></p>"
+        . "<p>Mô tả: " . htmlspecialchars($letter['content'], ENT_QUOTES, 'UTF-8') . "</p>";
 
       if ($status === 'đã hủy' && $reason) {
-        $body .= "<p>Lý do hủy: " . htmlspecialchars($reason) . "</p>";
+        $body .= "<p>Lý do hủy: " . htmlspecialchars($reason, ENT_QUOTES, 'UTF-8') . "</p>";
       }
-
       $mail->Body = $body;
+
+      $mail->AltBody = "Đơn của bạn với tiêu đề: " . $letter['title'] . " đã được " . $status
+        . ". Người duyệt: " . $approver['fullname'] . " (" . $approver['email'] . ").";
 
       // Gửi email
       $mail->send();
     } catch (Exception $e) {
-      error_log("Lỗi gửi email: " . $mail->ErrorInfo);
+      // Ghi log lỗi và ném ngoại lệ với thông tin lỗi
+      $errorMessage = "Không thể gửi email: " . $mail->ErrorInfo;
+      error_log($errorMessage);
+      throw new Exception($errorMessage);
     }
   }
 }

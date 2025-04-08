@@ -106,6 +106,7 @@ class UserController
       if (!empty($errors)) {
         require_once PATH_VIEW_ADMIN . 'users/edit.php';
       } else {
+        // Lưu dữ liệu vào session, bao gồm cả mật khẩu hiện tại
         $_SESSION['editUserData'] = $inputData;
         $_SESSION['editUserData']['userId'] = $userId;
         if (ob_get_length()) ob_clean();
@@ -127,18 +128,39 @@ class UserController
         }
         $editData = $_SESSION['editUserData'];
         $userId = (int)$editData['userId'];
+
+        // Lấy dữ liệu hiện tại từ cơ sở dữ liệu
+        $currentUser = $this->userModel->getUserById($userId);
+        if (!$currentUser) {
+          throw new Exception("Không tìm thấy người dùng trong cơ sở dữ liệu.");
+        }
+
+        // Chuẩn bị dữ liệu mới
         $data = [
           'username'      => $editData['username'],
-          'password'      => hashPassword($editData['password']),
           'fullname'      => $editData['name'],
           'email'         => $editData['email'],
           'birthDate'     => !empty($editData['birthdate']) ? $editData['birthdate'] : null,
           'categoryUser'  => $editData['user_type'],
           'department'    => $editData['department'],
-          'status'        => $editData['status']
+          'status'        => $editData['status'],
+          'password'      => ($editData['password'] !== $currentUser['password']) ? hashPassword($editData['password']) : $currentUser['password']
         ];
 
-        $this->userModel->update($data, "userId = $userId");
+        // So sánh dữ liệu mới với dữ liệu cũ
+        $hasChanges = false;
+        foreach ($data as $key => $value) {
+          if ($value !== $currentUser[$key]) {
+            $hasChanges = true;
+            break;
+          }
+        }
+
+        // Chỉ thực thi UPDATE nếu có thay đổi
+        if ($hasChanges) {
+          $this->userModel->update($data, "userId = $userId");
+        }
+
         unset($_SESSION['editUserData']);
         $_SESSION['success'] = "Cập nhật thành công!";
         header("Location: " . BASE_URL_ADMIN . "?action=users-index");

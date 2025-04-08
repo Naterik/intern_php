@@ -22,12 +22,6 @@ $currentPage = 'Quản lý đơn';
     <main class="maincontain">
       <div id="container">
         <p>Xác nhận thêm mới đơn</p>
-        <?php if (isset($_SESSION['error'])): ?>
-          <div class="error-message" style="color: red; margin-bottom: 10px;">
-            <?php echo htmlspecialchars($_SESSION['error']); ?>
-            <?php unset($_SESSION['error']); ?>
-          </div>
-        <?php endif; ?>
         <div class="form-create">
           <form id="letter-form" method="POST" action="<?php echo BASE_URL_ADMIN; ?>?action=letters-save">
             <input type="hidden" name="confirm" value="true">
